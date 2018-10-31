@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang = "en" class="tas-com">
+<head>
+	<meta charset="utf-8">
+	<title>Channeling Hans</title>
+	<link href="./themes/prism.css" rel="stylesheet" />
+	<link href="./themes/tas_style.css" rel="stylesheet" />
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="./lib/prism.js" charset="utf-8"></script>
+	<style type="text/css">
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Channeling Hans</h1>
+	<h2>Scatterplot</h2>
+	
+	<div class = "demo">
+        <h3 id="year_header">Year: 2009</h3>
+		<script type="text/javascript">
+			
+			// Define margins
+			var margin = {top: 10, right: 20, bottom: 25, left: 40};
+			
+			// Width and height
+			var outer_width = 600;
+			var outer_height = 400;
+			var svg_width = outer_width - margin.left - margin.right;
+			var svg_height = outer_height - margin.top - margin.bottom;
+
+            // The year to display
+            display_year = 2008;
+            
+            // Define a function that filters data by year
+			function yearFilter(value){
+				return (value.Year == display_year)
+			}
+            
+			// Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", svg_width + margin.left + margin.right)
+						.attr("height", svg_height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            
+			// Define a function to draw a simple bar chart
+			function generateVis(){
+                
+                // Create scale functions
+                // If circles go out of range, scaleLog might help
+                // Minimum and maximum of domain based on dataset fields
+                var xScale = d3.scaleLinear()
+                                     .domain([d3.min(dataset, function(d) {
+                                                                    return +d.GDP;
+                                                                }), d3.max(dataset, function(d) {
+                                                                    return +d.GDP;
+                                                                })])
+                                     .range([1, svg_width]);  // min set to 1 as min value is != 0
+
+                var yScale = d3.scaleLinear()
+                                     .domain([d3.min(dataset, function(d) {
+                                                                    return +d.Global_Competitiveness_Index;
+                                                                }), d3.max(dataset, function(d) {
+                                                                    return +d.Global_Competitiveness_Index;
+                                                                })])
+                                     .range([svg_height, 0]);
+
+                // Define scale for circle radius
+                var rScale = d3.scaleLinear()
+                                .domain([d3.min(dataset, function(d) {
+                                                                return +d.Population;
+                                                            }), d3.max(dataset, function(d) {
+                                                                return +d.Population;
+                                                            })])
+                                .range([1, 50]);
+
+                // Define axes
+                var xAxis = d3.axisBottom()
+                                  .scale(xScale);
+
+                var yAxis = d3.axisLeft()
+                                  .scale(yScale);
+
+                // Create and call the X axis
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + svg_height + ")")
+                    .attr("id", "xAxis")
+                    .call(xAxis);
+
+                // Create and call the Y axis
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("id", "yAxis")
+                    .call(yAxis);
+            
+                // Filter the data to only include the current year
+                var filtered_datset = dataset.filter(yearFilter);
+
+
+                /******** PERFORM DATA JOIN ************/
+                var circles = svg.selectAll("circle")
+                   .data(filtered_datset, function key(d) {
+                       return d.Country;
+                   });
+
+                
+                /******** HANDLE UPDATE SELECTION ************/
+                // Update the display of existing elelemnts to match new data
+                circles
+                    .transition()
+                    .duration(4000)
+                    .attr("cx", function(d) {
+                                        return xScale(d.GDP);
+                                   })
+                    .attr("cy", function(d) {
+                                        return yScale(d.Global_Competitiveness_Index);
+                                   })
+                    .attr("r", function(d) {
+                                        return rScale(d.Population);
+                                   })
+                    .style("opacity", "0.2")
+                    .style("fill", "green");
+                
+
+                /******** HANDLE ENTER SELECTION ************/
+                // Create new elements in the dataset
+                circles.enter()
+                    .append("circle")
+                    .attr("cx", function(d) {
+                                        return xScale(d.GDP);
+                                   })
+                    .attr("cy", function(d) {
+                                        return yScale(d.Global_Competitiveness_Index);
+                                   })
+                    .attr("r", function(d) {
+                                        return rScale(d.Population);
+                                   })
+                    .style("opacity", "0.2")
+                    .style("fill", "blue");
+
+                
+                /******** HANDLE EXIT SELECTION ************/
+                // Remove circles that no longer have a matching data element
+                circles.exit().remove();
+
+                // Set the year label
+                d3.select("#year_header").text("Year: " + display_year)
+
+            }
+            
+            // Load the file data.csv and generate a visualisation based on it
+		   d3.csv("./data/GCI_CompleteData2.csv")
+		  .then(function(data) {
+		      	  dataset = data;
+				  generateVis();
+				  // Set up a callback so we iterate through the years
+					setInterval(function() {
+						display_year = display_year + 1;
+						if(display_year > 2017){
+							display_year = 2008;
+						}
+					  	generateVis();
+					}, 4000);
+            
+           });
+            
+
+		</script>
+	</div>
+</body>	 
+</html>

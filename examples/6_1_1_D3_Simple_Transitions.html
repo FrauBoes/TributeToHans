@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang = "en" class="tas-com">
+<head>
+	<meta charset="utf-8">
+	<title>D3: Transitions In D3</title>
+	<link href="./themes/prism.css" rel="stylesheet" />
+	<link href="./themes/tas_style.css" rel="stylesheet" />
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="./lib/prism.js" charset="utf-8"></script>
+	<style type="text/css">
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shape-rendering: crispEdges;
+		}
+		
+		.axis text {
+			font-family: sans-serif;
+			font-size: 11px;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Transitions In D3</h1>
+	<h2>Demo</h2>
+	
+	<div class = "demo">
+		<script type="text/javascript">
+			
+			// Define margins
+			var margin = {top: 10, right: 20, bottom: 25, left: 40};
+			
+			//Width and height
+			var outer_width = 500;
+			var outer_height = 350;
+			var svg_width = outer_width - margin.left - margin.right;
+			var svg_height = outer_height - margin.top - margin.bottom;
+
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", svg_width + margin.left + margin.right)
+						.attr("height", svg_height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+									
+			//Dynamic, random dataset
+			var dataset = [];											//Initialize empty array
+			var numDataPoints = 50;										//Number of data points to create
+			var maxRange = 1000;										//Max range of new values
+			for (var i = 0; i < numDataPoints; i++) {					//Loop numDataPoints times
+				var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+				var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+				dataset.push([newNumber1, newNumber2]);					//Add new number to array
+			}
+
+			//Create scale functions
+			var xScale = d3.scaleLinear()
+								 .domain([0, 1000])
+								 .range([0, svg_width]);
+
+			var yScale = d3.scaleLinear()
+								 .domain([0, 1000])
+								 .range([svg_height, 0]);
+
+			//Define X axis
+			var xAxis = d3.axisBottom()
+							  .scale(xScale)
+							  .ticks(5);
+
+			//Define Y axis
+			var yAxis = d3.axisLeft()
+							  .scale(yScale)
+							  .ticks(5);
+
+			//Create X axis
+			svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + svg_height + ")")
+				.call(xAxis);
+			
+			//Create Y axis
+			svg.append("g")
+				.attr("class", "y axis")
+				.call(yAxis);
+					
+			// Define a fucntion to draw a simple bar chart
+			function generateVis(){
+				
+				/******** PERFORM DATA JOIN ************/
+				var circles = svg.selectAll("circle")
+				   .data(dataset);
+
+				/******** HANDLE UPDATE SELECTION ************/
+			  	// Update the display of existing elelemnts to match new data
+				circles
+					.transition()
+					.duration(4000)
+					.attr("cx", function(d) {
+								   		return xScale(d[0]);
+								   })
+					.attr("cy", function(d) {
+								   		return yScale(d[1]);
+								   })
+					.attr("r", 10)
+					.style("fill", "green");
+					   
+			
+				/******** HANDLE ENTER SELECTION ************/
+			  	// Create new elements in the dataset
+			  	circles.enter()
+					.append("circle")
+					.attr("cx", function(d) {
+								   		return xScale(d[0]);
+								   })
+					.attr("cy", function(d) {
+								   		return yScale(d[1]);
+								   })
+					.attr("r", 2)
+					.style("fill", "Blue");
+			
+				/******** HANDLE EXIT SELECTION ************/
+
+
+			}
+				
+
+			// Generate the visualisation
+			generateVis();
+
+			// set up an interval callback to refresh the visuaslaition every second
+			setInterval(function() {
+
+					//New values for dataset
+					var numValues = dataset.length;						 		//Count original length of dataset
+					var maxRange = 1000;										//Max range of new values
+					dataset = [];  						 				 		//Initialize empty array
+					for (var i = 0; i < numValues; i++) {				 		//Loop numValues times
+						var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+						var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+						dataset.push([newNumber1, newNumber2]);					//Add new number to array
+					}
+				
+					generateVis();
+				}, 5000);
+
+		</script>
+	</div>
+	
+	<div class = "explanation">
+		<h2>Explanation</h2>
+		<p>Set up styles to apply to the axes</p>
+		<pre class = "line-numbers"><code class="language-css">.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}</code></pre>
+
+
+		<p>Set up variables for controlling drawing and draw SVG canvas - note the use of margin variables and the aggition of the group to the SVG canvas.</p>
+		<pre class = "line-numbers"><code class="language-javascript">// Define margins
+var margin = {top: 10, right: 20, bottom: 25, left: 40};
+
+//Width and height
+var outer_width = 500;
+var outer_height = 350;
+var svg_width = outer_width - margin.left - margin.right;
+var svg_height = outer_height - margin.top - margin.bottom;
+
+//Create SVG element
+var svg = d3.select("body")
+			.append("svg")
+			.attr("width", svg_width + margin.left + margin.right)
+			.attr("height", svg_height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");</code></pre>
+			
+		<p>Randomly generate a dataset of 50 points.</p>
+		<pre class = "line-numbers"><code class="language-javascript">//Dynamic, random dataset
+var dataset = [];											//Initialize empty array
+var numDataPoints = 50;										//Number of data points to create
+var maxRange = 1000;										//Max range of new values
+for (var i = 0; i < numDataPoints; i++) {					//Loop numDataPoints times
+	var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+	var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+	dataset.push([newNumber1, newNumber2]);					//Add new number to array
+}</code></pre>
+
+		<p>Set up scales and axes.</p>
+		<pre class = "line-numbers"><code class="language-javascript">		//Create scale functions
+var xScale = d3.scaleLinear()
+					 .domain([0, 1000])
+					 .range([0, svg_width]);
+
+var yScale = d3.scaleLinear()
+					 .domain([0, 1000])
+					 .range([svg_height, 0]);
+
+//Define X axis
+var xAxis = d3.axisBottom()
+				  .scale(xScale)
+				  .ticks(5);
+
+//Define Y axis
+var yAxis = d3.axisLeft()
+				  .scale(yScale)
+				  .ticks(5);
+
+//Create X axis
+svg.append("g")
+	.attr("class", "x axis")
+	.attr("transform", "translate(0," + svg_height + ")")
+	.call(xAxis);
+
+//Create Y axis
+svg.append("g")
+	.attr("class", "y axis")
+	.call(yAxis);</code></pre>
+
+<p>The function that draws the chart.</p>
+		<pre class = "line-numbers"><code class="language-javascript">// Define a fucntion to draw a simple bar chart
+function generateVis(){
+	
+	/******** PERFORM DATA JOIN ************/
+	var circles = svg.selectAll("circle")
+	   .data(dataset);
+
+	/******** HANDLE UPDATE SELECTION ************/
+  	// Update the display of existing elelemnts to match new data
+	circles
+		.attr("cx", function(d) {
+					   		return xScale(d[0]);
+					   })
+		.attr("cy", function(d) {
+					   		return yScale(d[1]);
+					   })
+		.attr("r", 4)
+		.style("fill", "green");
+		   
+
+	/******** HANDLE ENTER SELECTION ************/
+  	// Create new elements in the dataset
+  	circles.enter()
+		.append("circle")
+		.attr("cx", function(d) {
+					   		return xScale(d[0]);
+					   })
+		.attr("cy", function(d) {
+					   		return yScale(d[1]);
+					   })
+		.attr("r", 6)
+		.style("fill", "Blue");
+
+	/******** HANDLE EXIT SELECTION ************/
+
+
+}</code></pre>
+
+
+		<p>Calll the vis generation function once and then schedule it to happen again every second.</p>
+		<pre class = "line-numbers"><code class="language-javascript">// Generate the visualisation
+generateVis();
+
+// set up an interval callback to refresh the visuaslaition every second
+setInterval(function() {
+
+	//New values for dataset
+	var numValues = dataset.length;						 		//Count original length of dataset
+	var maxRange = 1000;										//Max range of new values
+	dataset = [];  						 				 		//Initialize empty array
+	for (var i = 0; i < numValues; i++) {				 		//Loop numValues times
+		var newNumber1 = Math.floor(Math.random() * maxRange);	//New random integer
+		var newNumber2 = Math.floor(Math.random() * maxRange);	//New random integer
+		dataset.push([newNumber1, newNumber2]);					//Add new number to array
+	}
+
+	generateVis();
+}, 1000);</code></pre>
+		
+	</div>
+</body>	 
+</html>
