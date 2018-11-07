@@ -27,7 +27,7 @@
 	<h2>Scatterplot</h2>
 	
 	<div class = "demo">
-        <h3 id="year_header">Year: 2009</h3>
+        <h3 id="year_header">Year: 2008</h3>
 		<script type="text/javascript">
 			
 			// Define margins
@@ -55,20 +55,18 @@
 						.append("g")
 						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            
 			// Define a function to draw a simple bar chart
 			function generateVis(){
                 
                 // Create scale functions
-                // If circles go out of range, scaleLog might help
                 // Minimum and maximum of domain based on dataset fields
-                var xScale = d3.scaleLinear()
+                var xScale = d3.scaleLog()
                                      .domain([d3.min(dataset, function(d) {
                                                                     return +d.GDP;
                                                                 }), d3.max(dataset, function(d) {
                                                                     return +d.GDP;
                                                                 })])
-                                     .range([1, svg_width]);  // min set to 1 as min value is != 0
+                                     .range([1, svg_width]);  
 
                 var yScale = d3.scaleLinear()
                                      .domain([d3.min(dataset, function(d) {
@@ -89,19 +87,21 @@
 
                 // Define axes
                 var xAxis = d3.axisBottom()
-                                  .scale(xScale);
+                                  .scale(xScale)
+                                  .ticks(5);
 
                 var yAxis = d3.axisLeft()
-                                  .scale(yScale);
+                                  .scale(yScale)
+                                  .ticks(5);
 
-                // Create and call the X axis
+                // Create and call the X-axis
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + svg_height + ")")
                     .attr("id", "xAxis")
                     .call(xAxis);
 
-                // Create and call the Y axis
+                // Create and call the Y-axis
                 svg.append("g")
                     .attr("class", "y axis")
                     .attr("id", "yAxis")
@@ -116,13 +116,18 @@
                    .data(filtered_datset, function key(d) {
                        return d.Country;
                    });
+                
+                var labels = svg.selectAll("text")
+                   .data(filtered_datset, function key(d) {
+                       return d.Country;
+                   });
 
                 
                 /******** HANDLE UPDATE SELECTION ************/
-                // Update the display of existing elelemnts to match new data
+                // Update the display of existing elements to match new data
                 circles
                     .transition()
-                    .duration(4000)
+                    .duration(1000)
                     .attr("cx", function(d) {
                                         return xScale(d.GDP);
                                    })
@@ -134,6 +139,23 @@
                                    })
                     .style("opacity", "0.2")
                     .style("fill", "green");
+                
+                labels
+                    .transition()
+                    .duration(1000)
+                    .attr("x", function(d) {
+                                    return xScale(d.GDP);
+                                    })
+                    .attr("y", function(d) {
+                                    return yScale(d.Global_Competitiveness_Index);
+                                    })
+                    .text(function(d) {
+                                return d.Country;
+                                    })
+                    .attr("text-anchor", "middle")
+                    .style("fill", "black")
+                    .style("font-family", "sans-serif")
+                    .style("font-size", "11px");
                 
 
                 /******** HANDLE ENTER SELECTION ************/
@@ -150,12 +172,29 @@
                                         return rScale(d.Population);
                                    })
                     .style("opacity", "0.2")
-                    .style("fill", "blue");
+                    .style("fill", "blue")
 
+                labels.enter()
+                    .append("text")
+                    .attr("x", function(d) {
+                                    return xScale(d.GDP);
+                                    })
+                    .attr("y", function(d) {
+                                    return yScale(d.Global_Competitiveness_Index);
+                                    })
+                    .text(function(d) {
+                                return d.Country;
+                                    })
+                    .attr("text-anchor", "middle")
+                    .style("fill", "black")
+                    .style("font-family", "sans-serif")
+                    .style("font-size", "11px");
                 
+                       
                 /******** HANDLE EXIT SELECTION ************/
                 // Remove circles that no longer have a matching data element
                 circles.exit().remove();
+                labels.exit().remove();
 
                 // Set the year label
                 d3.select("#year_header").text("Year: " + display_year)
@@ -163,7 +202,8 @@
             }
             
             // Load the file data.csv and generate a visualisation based on it
-		   d3.csv("./data/GCI_CompleteData2.csv")
+            // Can use smaller selection of data in GCI_TestData.csv if needed
+		   d3.csv("./data/GCI_TestData.csv")
 		  .then(function(data) {
 		      	  dataset = data;
 				  generateVis();
@@ -174,7 +214,7 @@
 							display_year = 2008;
 						}
 					  	generateVis();
-					}, 4000);
+					}, 1000);
             
            });
             
