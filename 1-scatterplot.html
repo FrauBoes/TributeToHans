@@ -116,12 +116,14 @@
                    .data(filtered_datset, function key(d) {
                        return d.Country;
                    });
-                
-                var labels = svg.selectAll("text")
-                   .data(filtered_datset, function key(d) {
-                       return d.Country;
-                   });
 
+                // Create an empty div which will hold the country label
+                var countryLabel = d3.select("body")
+                    .append("div")
+                    .style("position", "absolute")
+                    .style("z-index", "10")
+                    .style("visibility", "hidden");
+    
                 
                 /******** HANDLE UPDATE SELECTION ************/
                 // Update the display of existing elements to match new data
@@ -140,23 +142,6 @@
                     .style("opacity", "0.2")
                     .style("fill", "green");
                 
-                labels
-                    .transition()
-                    .duration(1000)
-                    .attr("x", function(d) {
-                                    return xScale(d.GDP);
-                                    })
-                    .attr("y", function(d) {
-                                    return yScale(d.Global_Competitiveness_Index);
-                                    })
-                    .text(function(d) {
-                                return d.Country;
-                                    })
-                    .attr("text-anchor", "middle")
-                    .style("fill", "black")
-                    .style("font-family", "sans-serif")
-                    .style("font-size", "11px");
-                
 
                 /******** HANDLE ENTER SELECTION ************/
                 // Create new elements in the dataset
@@ -173,28 +158,18 @@
                                    })
                     .style("opacity", "0.2")
                     .style("fill", "blue")
-
-                labels.enter()
-                    .append("text")
-                    .attr("x", function(d) {
-                                    return xScale(d.GDP);
-                                    })
-                    .attr("y", function(d) {
-                                    return yScale(d.Global_Competitiveness_Index);
-                                    })
-                    .text(function(d) {
-                                return d.Country;
-                                    })
-                    .attr("text-anchor", "middle")
-                    .style("fill", "black")
-                    .style("font-family", "sans-serif")
-                    .style("font-size", "11px");
-                
+                    .on("mouseover", function(d){return countryLabel.style("visibility", "visible").text(d.Country);})
+                    .on("mousemove", function(){return countryLabel.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+                    .on("mouseout", function(){return countryLabel.style("visibility", "hidden");});         
                        
                 /******** HANDLE EXIT SELECTION ************/
                 // Remove circles that no longer have a matching data element
-                circles.exit().remove();
-                labels.exit().remove();
+                // TODO: setting visibility to null might not be needed
+                circles.exit()
+                    .on("mouseover", function(d){return countryLabel.style("visibility", "hidden");})
+                    .on("mousemove", function(d){return countryLabel.style("visibility", "hidden");})
+                    .on("mouseout", function(d){return countryLabel.style("visibility", "hidden");})
+                    .remove();
 
                 // Set the year label
                 d3.select("#year_header").text("Year: " + display_year)
