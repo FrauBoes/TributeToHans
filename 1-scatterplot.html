@@ -29,6 +29,12 @@
 	
 	<div class = "demo">
         <h3 id="year_header">Year: 2008</h3>
+        
+        <div class="slidecontainer">
+            <input type="range" min="2008" max="2017" value="2008" class="slider" id="yearRange">
+            <button type="button" id="yearRangeBtn">Stop</button>
+        </div>
+
 		<script type="text/javascript">
 			
 			// Define margins
@@ -173,28 +179,59 @@
                     .on("mouseout", function(d){return countryLabel.style("visibility", "hidden");})
                     .remove();
 
-                // Set the year label
-                d3.select("#year_header").text("Year: " + display_year)
+            }
 
+
+            /******** HANDLE SLIDER UPDATE ************/
+            // Get necessary dom objects
+            var slider = document.getElementById("yearRange");
+            var sliderControlBtn = document.getElementById("yearRangeBtn");
+            var yearDisplay = document.getElementById("year_header");
+
+            // shows wether the animation is currently running or not
+            var running = true;
+            
+            // updates the year and moves the slider to appropriate position
+            function updateYearAndSlider(){
+                if (running) {
+
+                    display_year = display_year + 1;
+                    if(display_year > 2017){
+                        display_year = 2008;
+                    }
+                    slider.value = display_year;
+                    yearDisplay.innerText = display_year;
+                }
+            }
+
+            // controls slider actions 
+            slider.oninput = function(){
+                display_year = parseInt(this.value);
+                yearDisplay.innerText = display_year;
+                running = false;
+                sliderControlBtn.innerText = "Start";
+                generateVis();
             }
             
+            // controls stop/start action of slider control button
+            sliderControlBtn.onclick = function(){
+                running = !running;
+                sliderControlBtn.innerText = running ? "Stop" : "Start";
+            }
+
             // Load the file data.csv and generate a visualisation based on it
             // Can use smaller selection of data in GCI_TestData.csv if needed
-		   d3.csv("./data/GCI_TestData.csv")
-		  .then(function(data) {
+		    d3.csv("./data/GCI_TestData.csv")
+		    .then(function(data) {
 		      	  dataset = data;
 				  generateVis();
 				  // Set up a callback so we iterate through the years
 					setInterval(function() {
-						display_year = display_year + 1;
-						if(display_year > 2017){
-							display_year = 2008;
-						}
+                        updateYearAndSlider();
 					  	generateVis();
 					}, 1000);
             
-           });
-            
+            });
 
 		</script>
 	</div>
