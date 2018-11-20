@@ -6,11 +6,13 @@ var margin = {
     left: 40
 };
 
+
 // Width and height
 var outer_width = 700;
 var outer_height = 550;
 var svg_width = outer_width - margin.left - margin.right;
 var svg_height = outer_height - margin.top - margin.bottom;
+
 
 // Create SVG element
 var svg = d3.select("main")
@@ -22,6 +24,7 @@ var svg = d3.select("main")
 
 
 // Create scale functions
+// Define domain inside the generateVis function below
 var xScale = d3.scaleLog()
     .range([0, svg_width]);
 
@@ -32,7 +35,6 @@ var yScale = d3.scaleLinear()
 var rScale = d3.scaleLinear()
     .range([0, 50]);
 
-
 // Define axes
 var xAxis = d3.axisBottom()
     .scale(xScale)
@@ -42,23 +44,24 @@ var yAxis = d3.axisLeft()
     .ticks(5);
 
 
-
 // The year to display
 display_year = 2008;
 
+
 // Define a function that filters data by year
+// Exclude countries with missing values
 function yearFilter(value) {
-    return (value.Year == display_year)
+    return (value.Year == display_year && value.GDP != 0)
 }
 
 
-// Define a function to draw a simple bar chart
+// Define a function to draw chart
 function generateVis() {
 
     // Filter the data to only include the current year
     var filtered_datset = dataset.filter(yearFilter);
 
-
+    
     /******** PERFORM DATA JOIN ************/
     var circles = svg.selectAll("circle")
         .data(filtered_datset, function key(d) {
@@ -107,6 +110,8 @@ function generateVis() {
         })
         .style("opacity", "0.2")
         .style("fill", "blue")
+
+        // Responsive circle labels
         .on("mouseover", function(d) {
             return countryLabel.style("visibility", "visible").text(d.Country);
         })
@@ -117,6 +122,7 @@ function generateVis() {
             return countryLabel.style("visibility", "hidden");
         });
 
+    
     /******** HANDLE EXIT SELECTION ************/
     // Remove circles that no longer have a matching data element
     // TODO: setting visibility to null might not be needed
@@ -140,10 +146,10 @@ var slider = document.getElementById("yearRange");
 var sliderControlBtn = document.getElementById("yearRangeBtn");
 var yearDisplay = document.getElementById("year_header");
 
-// shows whether the animation is currently running or not
+// Shows whether the animation is currently running or not
 var running = true;
 
-// updates the year and moves the slider to appropriate position
+// Updates the year and moves the slider to appropriate position
 function updateYearAndSlider() {
     if (running) {
 
@@ -156,7 +162,7 @@ function updateYearAndSlider() {
     }
 }
 
-// controls slider actions 
+// Controls slider actions 
 slider.oninput = function() {
     display_year = parseInt(this.value);
     yearDisplay.innerText = display_year;
@@ -165,7 +171,7 @@ slider.oninput = function() {
     generateVis();
 }
 
-// controls stop/start action of slider control button
+// Controls stop/start action of slider control button
 sliderControlBtn.onclick = function() {
     running = !running;
     sliderControlBtn.innerText = running ? "Stop" : "Start";
@@ -173,7 +179,7 @@ sliderControlBtn.onclick = function() {
 
 // Load the file data.csv and generate a visualisation based on it
 // Can use smaller selection of data in GCI_TestData.csv if needed
-d3.csv("./data/GCI_TestData.csv").then(function(data) {
+d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
 
     dataset = data;
 
@@ -187,26 +193,26 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
     yScale.domain([0, max_GCI]);
     rScale.domain([0, max_pop]);
 
-    // Format x axis ticks
+    // Format x-axis ticks
     xAxis.tickFormat(function (d) { 
         return xScale.tickFormat(5, d3.format(".0s"))(d * 10000000).replace(/G/,"B") 
     });
 
-    // Create and call the X-axis
+    // Create and call the x-axis
     svg.append("g")
         .attr("class", "x axis")
         .attr("id", "xAxis")
         .attr("transform", "translate(0," + svg_height + ")")
         .call(xAxis);
 
-    // Create and call the Y-axis;
+    // Create and call the y-axis;
     svg.append("g")
         .attr("class", "y axis")
         .attr("id", "yAxis")
         .call(yAxis);
 
     // Lable code source: view-source:https://bost.ocks.org/mike/nations/
-    // X axis label
+    // x-axis label
     svg.append("text")
         .attr("class", "xlabel")
         .attr("x", svg_width)
@@ -214,7 +220,7 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
         .attr("text-anchor", "end")
         .text("GDP");
 
-    // Y axis label
+    // y-axis label
     svg.append("text")
         .attr("class", "ylabel")
         .attr("y", 6)
