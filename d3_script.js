@@ -203,7 +203,6 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
         .attr("id", "yAxis")
         .call(yAxis);
 
-
     // Lable code source: view-source:https://bost.ocks.org/mike/nations/
     // X axis label
     svg.append("text")
@@ -220,7 +219,7 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
         .attr("dy", ".75em")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
-        .text("life expectancy (years)");
+        .text("Global Competitiveness Index");
 
     // Initiate graph
     generateVis();
