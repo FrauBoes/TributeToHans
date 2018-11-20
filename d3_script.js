@@ -203,6 +203,25 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
         .attr("id", "yAxis")
         .call(yAxis);
 
+
+    // Lable code source: view-source:https://bost.ocks.org/mike/nations/
+    // X axis label
+    svg.append("text")
+        .attr("class", "xlabel")
+        .attr("x", svg_width)
+        .attr("y", svg_height - 6)
+        .attr("text-anchor", "end")
+        .text("Population");
+
+    // Y axis label
+    svg.append("text")
+        .attr("class", "ylabel")
+        .attr("y", 6)
+        .attr("dy", ".75em")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .text("life expectancy (years)");
+
     // Initiate graph
     generateVis();
 
