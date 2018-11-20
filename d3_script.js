@@ -20,6 +20,7 @@ var svg = d3.select("main")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
 // Create scale functions
 var xScale = d3.scaleLog()
     .range([0, svg_width]);
@@ -39,6 +40,8 @@ var xAxis = d3.axisBottom()
 var yAxis = d3.axisLeft()
     .scale(yScale)
     .ticks(5);
+
+
 
 // The year to display
 display_year = 2008;
@@ -175,13 +178,8 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
     dataset = data;
 
     // Get minimums and maximums
-    //var min_GDP = d3.min(dataset, function(d) { return +d.GDP;} );
     var max_GDP = d3.max(dataset, function(d) { return +d.GDP;} );
-
-    //var min_GCI = d3.min(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
     var max_GCI = d3.max(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
-
-    //var min_pop = d3.min(dataset, function(d) { return +d.Population;} );
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
 
     // Specify axis domains
