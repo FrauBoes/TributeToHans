@@ -1,0 +1,18 @@
+# Folders
+##########
+
+__pycache__/
+venv/
+.idea/
+.ipynb_checkpoints/
+lib/
+themes/
+examples/
+
+
+
+# Files
+########
+
+._*
+workspace.xml
