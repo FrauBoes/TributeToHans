@@ -12,14 +12,6 @@ var outer_height = 550;
 var svg_width = outer_width - margin.left - margin.right;
 var svg_height = outer_height - margin.top - margin.bottom;
 
-// The year to display
-display_year = 2008;
-
-// Define a function that filters data by year
-function yearFilter(value) {
-    return (value.Year == display_year)
-}
-
 // Create SVG element
 var svg = d3.select("main")
     .append("svg")
@@ -28,57 +20,37 @@ var svg = d3.select("main")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+// Create scale functions
+var xScale = d3.scaleLog()
+    .range([0, svg_width]);
+
+var yScale = d3.scaleLinear()
+    .range([svg_height, 0]);
+
+// Scale radius
+var rScale = d3.scaleLinear()
+    .range([0, 50]);
+
+
+// Define axes
+var xAxis = d3.axisBottom()
+    .scale(xScale)
+
+var yAxis = d3.axisLeft()
+    .scale(yScale)
+    .ticks(5);
+
+// The year to display
+display_year = 2008;
+
+// Define a function that filters data by year
+function yearFilter(value) {
+    return (value.Year == display_year)
+}
+
+
 // Define a function to draw a simple bar chart
 function generateVis() {
-
-    // Create scale functions
-    // Minimum and maximum of domain based on dataset fields
-    var xScale = d3.scaleLog()
-        .domain([d3.min(dataset, function(d) {
-            return +d.GDP;
-        }), d3.max(dataset, function(d) {
-            return +d.GDP;
-        })])
-        .range([1, svg_width]);
-
-    var yScale = d3.scaleLinear()
-        .domain([d3.min(dataset, function(d) {
-            return +d.Global_Competitiveness_Index;
-        }), d3.max(dataset, function(d) {
-            return +d.Global_Competitiveness_Index;
-        })])
-        .range([svg_height, 0]);
-
-    // Define scale for circle radius
-    var rScale = d3.scaleLinear()
-        .domain([d3.min(dataset, function(d) {
-            return +d.Population;
-        }), d3.max(dataset, function(d) {
-            return +d.Population;
-        })])
-        .range([1, 50]);
-
-    // Define axes
-    var xAxis = d3.axisBottom()
-        .scale(xScale)
-        .ticks(5);
-
-    var yAxis = d3.axisLeft()
-        .scale(yScale)
-        .ticks(5);
-
-    // Create and call the X-axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + svg_height + ")")
-        .attr("id", "xAxis")
-        .call(xAxis);
-
-    // Create and call the Y-axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .attr("id", "yAxis")
-        .call(yAxis);
 
     // Filter the data to only include the current year
     var filtered_datset = dataset.filter(yearFilter);
@@ -198,14 +170,47 @@ sliderControlBtn.onclick = function() {
 
 // Load the file data.csv and generate a visualisation based on it
 // Can use smaller selection of data in GCI_TestData.csv if needed
-d3.csv("./data/GCI_TestData.csv")
-    .then(function(data) {
-        dataset = data;
-        generateVis();
-        // Set up a callback so we iterate through the years
-        setInterval(function() {
-            updateYearAndSlider();
-            generateVis();
-        }, 1000);
+d3.csv("./data/GCI_TestData.csv").then(function(data) {
 
-    });
+    dataset = data;
+
+    // Get minimums and maximums
+    //var min_GDP = d3.min(dataset, function(d) { return +d.GDP;} );
+    var max_GDP = d3.max(dataset, function(d) { return +d.GDP;} );
+
+    //var min_GCI = d3.min(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
+    var max_GCI = d3.max(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
+
+    //var min_pop = d3.min(dataset, function(d) { return +d.Population;} );
+    var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
+
+    // Specify axis domains
+    xScale.domain([1, max_GDP]);
+    yScale.domain([0, max_GCI]);
+    rScale.domain([0, max_pop]);
+
+    // Format x axis ticks
+    xAxis.tickFormat(function (d) { return xScale.tickFormat(5, d3.format(".0s"))(d) })
+
+    // Create and call the X-axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("id", "xAxis")
+        .attr("transform", "translate(0," + svg_height + ")")
+        .call(xAxis);
+
+    // Create and call the Y-axis;
+    svg.append("g")
+        .attr("class", "y axis")
+        .attr("id", "yAxis")
+        .call(yAxis);
+
+    // Initiate graph
+    generateVis();
+
+    // Set up a callback so we iterate through the years
+    setInterval(function() {
+        updateYearAndSlider();
+        generateVis();
+    }, 1000);
+});
