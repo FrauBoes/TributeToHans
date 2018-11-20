@@ -188,7 +188,9 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
     rScale.domain([0, max_pop]);
 
     // Format x axis ticks
-    xAxis.tickFormat(function (d) { return xScale.tickFormat(5, d3.format(".0s"))(d) })
+    xAxis.tickFormat(function (d) { 
+        return xScale.tickFormat(5, d3.format(".0s"))(d * 1000000000).replace(/G/,"B") 
+    });
 
     // Create and call the X-axis
     svg.append("g")
