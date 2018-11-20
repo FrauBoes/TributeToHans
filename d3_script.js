@@ -210,7 +210,7 @@ d3.csv("./data/GCI_TestData.csv").then(function(data) {
         .attr("x", svg_width)
         .attr("y", svg_height - 6)
         .attr("text-anchor", "end")
-        .text("Population");
+        .text("GDP");
 
     // Y axis label
     svg.append("text")
