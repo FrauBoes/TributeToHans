@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang = "en" class="tas-com">
+
 <head>
 	<meta charset="utf-8">
 	<title>Channeling Hans</title>
    <link rel="stylesheet" type="text/css" href="style.css">
 	<script type="text/javascript" src="./d3/d3_version5.js"></script>
 </head>
-<body>
-<div id="wrapper">	
-    <main></main>
-    <aside>
-        <h1>Channeling Hans</h1>
-        <h2>Scatterplot</h2>
 
-        <h3 id="year_header">Year: 2008</h3>
-        
-        <div class="slidecontainer">
-            <input type="range" min="2008" max="2017" value="2008" class="slider" id="yearRange">
-            <button type="button" id="yearRangeBtn">Stop</button>
-        </div>
-    </aside>
-    <script type="text/javascript" src="d3_script.js"></script> <!-- The D3 script is now in d3_script.js -->
-</div>
+<body>
+    <h1>Channeling Hans: Population size, Global Competitive Index & GDP</h1>
+    <div id="wrapper">
+        <main>
+        </main>
+        <aside>
+            <h2>Timeline</h2>
+            <h3 id="year_header">2008</h3>
+            <div class="slidecontainer">
+                <input type="range" min="2008" max="2017" value="2008" class="slider" id="yearRange">
+                <button type="button" id="yearRangeBtn">Stop</button>
+            </div>
+        </aside>
+        <script type="text/javascript" src="d3_script.js"></script> <!-- The D3 script is now in d3_script.js -->
+    </div>
 </body>	 
 </html>

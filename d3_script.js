@@ -1,15 +1,15 @@
 // Define margins
 var margin = {
-    top: 50,
-    right: 20,
-    bottom: 25,
+    top: 20,
+    right: 10,
+    bottom: 20,
     left: 40
 };
 
 
 // Width and height
-var outer_width = 700;
-var outer_height = 550;
+var outer_width = 800;
+var outer_height = 600;
 var svg_width = outer_width - margin.left - margin.right;
 var svg_height = outer_height - margin.top - margin.bottom;
 
@@ -49,9 +49,10 @@ display_year = 2008;
 
 
 // Define a function that filters data by year
-// Exclude countries with missing values
+// Exclude countries where any of the features is missing a value
 function yearFilter(value) {
-    return (value.Year == display_year && value.GDP != 0)
+    return (value.Year == display_year 
+        && value.GDP != 0 && value.Global_Competitiveness_Index != 0 && value.Population != 0) 
 }
 
 
@@ -91,7 +92,6 @@ function generateVis() {
         .attr("r", function(d) {
             return rScale(d.Population);
         })
-        .style("opacity", "0.2")
         .style("fill", "green");
 
 
@@ -108,7 +108,6 @@ function generateVis() {
         .attr("r", function(d) {
             return rScale(d.Population);
         })
-        .style("opacity", "0.2")
         .style("fill", "blue")
 
         // Responsive circle labels
@@ -183,14 +182,14 @@ d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
 
     dataset = data;
 
-    // Get minimums and maximums
+    // Get maximums
     var max_GDP = d3.max(dataset, function(d) { return +d.GDP;} );
     var max_GCI = d3.max(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
 
     // Specify axis domains
     xScale.domain([1, max_GDP]);
-    yScale.domain([0, max_GCI]);
+    yScale.domain([1, max_GCI]);
     rScale.domain([0, max_pop]);
 
     // Format x-axis ticks
