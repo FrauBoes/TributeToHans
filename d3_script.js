@@ -1,14 +1,14 @@
 // Define margins
 var margin = {
     top: 20,
-    right: 10,
+    right: 30,
     bottom: 20,
     left: 40
 };
 
 
 // Width and height
-var outer_width = 800;
+var outer_width = 820;
 var outer_height = 600;
 var svg_width = outer_width - margin.left - margin.right;
 var svg_height = outer_height - margin.top - margin.bottom;
@@ -33,7 +33,7 @@ var yScale = d3.scaleLinear()
 
 // Scale radius
 var rScale = d3.scaleLinear()
-    .range([0, 50]);
+    .range([0, 3000]);
 
 // Define axes
 var xAxis = d3.axisBottom()
@@ -90,7 +90,7 @@ function generateVis() {
             return yScale(d.Global_Competitiveness_Index);
         })
         .attr("r", function(d) {
-            return rScale(d.Population);
+            return Math.sqrt(rScale(+d.Population)/Math.PI);
         })
         .style("fill", "green");
 
@@ -106,7 +106,7 @@ function generateVis() {
             return yScale(d.Global_Competitiveness_Index);
         })
         .attr("r", function(d) {
-            return rScale(d.Population);
+            return Math.sqrt(rScale(+d.Population)/Math.PI);
         })
         .style("fill", "blue")
 
