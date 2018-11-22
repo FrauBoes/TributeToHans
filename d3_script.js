@@ -43,6 +43,15 @@ var yAxis = d3.axisLeft()
     .scale(yScale)
     .ticks(5);
 
+var colour = {
+    "Europe and North America": "darkblue",
+    "Middle East and North Africa": "saddlebrown",
+    "Sub-Saharan Africa": "green",
+    "Latin America and the Caribbean": "aqua",
+    "Eurasia": "red",
+    "East Asia and Pacific": "deeppink",
+    "South Asia": "yellow"
+};
 
 // The year to display
 display_year = 2008;
@@ -54,7 +63,6 @@ function yearFilter(value) {
     return (value.Year == display_year 
         && value.GDP != 0 && value.Global_Competitiveness_Index != 0 && value.Population != 0) 
 }
-
 
 // Define a function to draw chart
 function generateVis() {
@@ -92,7 +100,9 @@ function generateVis() {
         .attr("r", function(d) {
             return Math.sqrt(rScale(+d.Population)/Math.PI);
         })
-        .style("fill", "green");
+        .style("fill", function(d) { 
+            return colour[d['Forum classification']];
+        });
 
 
     /******** HANDLE ENTER SELECTION ************/
@@ -108,7 +118,9 @@ function generateVis() {
         .attr("r", function(d) {
             return Math.sqrt(rScale(+d.Population)/Math.PI);
         })
-        .style("fill", "blue")
+        .style("fill", function(d) { 
+            return colour[d['Forum classification']];
+        })
 
         // Responsive circle labels
         .on("mouseover", function(d) {
