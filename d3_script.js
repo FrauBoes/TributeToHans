@@ -91,6 +91,7 @@ function generateVis() {
     circles
         .transition()
         .duration(1000)
+        .ease(d3.easeLinear)
         .attr("cx", function(d) {
             return xScale(d.GDP);
         })
