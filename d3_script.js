@@ -57,6 +57,9 @@ var colour = {
 display_year = 2008;
 
 
+// Countries which are selected in the Search List
+checkedCountries = new Set([]);
+
 // Define a function that filters data by year
 // Exclude countries where any of the features is missing a value
 function yearFilter(value) {
@@ -189,9 +192,57 @@ sliderControlBtn.onclick = function() {
     sliderControlBtn.innerText = running ? "Stop" : "Start";
 }
 
+// Populate the Search List with all countries found in the data
+function populateSearchList(data){
+    var countryNames = d3.map(data, function(d){return d.Country;}).keys();
+    var countrySearchList = $("#countrySearchList");
+
+    for (var i=0; i<countryNames.length; i++){
+        countrySearchList.append(`
+            <input type="checkbox" name="${countryNames[i]}" value="${countryNames[i]}"><span>${countryNames[i]}<br></span>`);
+    }
+}
+
+// Displays elements in Search List which are relevant to the input query and hides others
+function countrySearch(){
+    var countries = $("#countrySearchList").children("input");
+    var countriesText = $("#countrySearchList").children("span");
+
+    query = $("#countrySearchInput").val().toUpperCase();
+
+    for (var i = 0; i < countries.length; i++) {
+        if (countries[i].value.toUpperCase().indexOf(query) > -1) {
+            countries[i].style.display = "";
+            countriesText[i].style.display = "";
+
+        }
+        else {
+            countries[i].style.display = "none";
+            countriesText[i].style.display = "none";
+        }
+    }
+}
+
+//  Add/remove checked/unchecked countires to the gloabl checkedCountries set
+function updateCheckedCountries(){
+    var countries = $("#countrySearchList").children("input");
+
+    for (var i = 0; i < countries.length; i++) {
+        if (countries[i].checked) {
+            checkedCountries.add(countries[i].value);
+        }
+        else {
+            checkedCountries.delete(countries[i].value);
+        }
+    }
+}
+
 // Load the file data.csv and generate a visualisation based on it
 // Can use smaller selection of data in GCI_TestData.csv if needed
 d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
+
+    // add countries to search list
+    populateSearchList(data);
 
     dataset = data;
 
@@ -246,7 +297,9 @@ d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
 
     // Set up a callback so we iterate through the years
     setInterval(function() {
+        updateCheckedCountries();
         updateYearAndSlider();
+        console.log("Year: " + display_year + "\nChecked Countries: ", checkedCountries);
         generateVis();
     }, 1000);
 });
