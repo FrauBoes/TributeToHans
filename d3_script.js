@@ -239,21 +239,22 @@ function updateCheckedCountries(){
 
 // Load the file data.csv and generate a visualisation based on it
 // Can use smaller selection of data in GCI_TestData.csv if needed
-d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
+d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
 
     // add countries to search list
     populateSearchList(data);
 
     dataset = data;
 
-    // Get maximums
+    // Get maximums and minimums where necessary
     var max_GDP = d3.max(dataset, function(d) { return +d.GDP;} );
     var max_GCI = d3.max(dataset, function(d) { return +d.Global_Competitiveness_Index;} );
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
-
+    var min_GDP = d3.min(dataset, function(d) { return +d.GDP;} );
+    
     // Specify axis domains
-    xScale.domain([1, max_GDP]);
-    yScale.domain([1, max_GCI]);
+    xScale.domain([min_GDP-1, max_GDP]);    // -1 hack to include tick for 1B
+    yScale.domain([2, max_GCI]);    // 2 to spread circlces in graph, min GCI value = 2.7
     rScale.domain([0, max_pop]);
 
     // Format x-axis ticks
