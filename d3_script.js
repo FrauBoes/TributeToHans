@@ -76,7 +76,7 @@ var xScaleBar = d3.scaleLinear()
 
 var yScaleBar = d3.scaleBand()
     .range([svgHeightBar, 0])
-    .domain(["Albania", "Bahrain", "Iceland", "Malta"]);    // Working with hard-coded country selection for now
+        // Working with hard-coded country selection for now
                                                             // TODO access checkedCountries                    
 // Define axes
 var xAxisBar = d3.axisBottom()
@@ -102,8 +102,8 @@ var colour = {
 // The year to display
 displayYear = 2008;
 
-// Countries which are selected in the search list
-checkedCountries = new Set([]);
+// Countries which are selected in the search list stored in array
+checkedCountries = [];
 
 /******** FUNCTIONS ************/
 
@@ -115,12 +115,10 @@ function yearFilter(value) {
         && value.Population != 0);
 }
 
-// Filters data by selected countries    // Working with hard-coded country selection for now
-function countryFilter(value) {                                 // TODO access checkedCountries
-    return (value.Country == "Albania" 
-    || value.Country == "Bahrain"
-    || value.Country == "Iceland"
-    || value.Country == "Malta");
+// Filters data by selected countries
+function countryFilter(value) {                                 // TODO access all entries in checkedCountries
+    return (value.Country == checkedCountries[0]
+        || value.Country == checkedCountries[1]);
 }
 
 // Draw chart
@@ -285,7 +283,7 @@ sliderControlBtn.onclick = function() {
 }
 
 /******** SEARCH LIST ************/
-// Populate the Search List with all countries found in the data
+// Populate the search list with all countries found in the data
 function populateSearchList(data){
     var countryNames = d3.map(data, function(d){return d.Country;}).keys();
     var countrySearchList = $("#countrySearchList");
@@ -296,7 +294,7 @@ function populateSearchList(data){
     }
 }
 
-// Displays elements in Search List which are relevant to the input query and hides others
+// Displays elements in search list which are relevant to the input query and hides others
 function countrySearch(){
     var countries = $("#countrySearchList").children("input");
     var countriesText = $("#countrySearchList").children("span");
@@ -316,16 +314,16 @@ function countrySearch(){
     }
 }
 
-//  Add/remove checked/unchecked countires to the gloabl checkedCountries set
+//  Add/remove checked/unchecked countries to the gloabl checkedCountries array
 function updateCheckedCountries(){
     var countries = $("#countrySearchList").children("input");
 
+    // Clear old selection
+    checkedCountries = [];
+
     for (var i = 0; i < countries.length; i++) {
         if (countries[i].checked) {
-            checkedCountries.add(countries[i].value);
-        }
-        else {
-            checkedCountries.delete(countries[i].value);
+            checkedCountries.push(countries[i].value);
         }
     }
 }
@@ -390,7 +388,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
     // Get maximums and minimums where necessary
 
     // Specify axis domains         
-    // yScaleBar.domain(["Albania", "Bahrain", "Iceland", "Malta"]);    // TODO: Use checkedCountries
+    yScaleBar.domain(checkedCountries);
 
     // Format x-axis ticks
 
