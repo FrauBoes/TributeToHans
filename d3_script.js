@@ -76,8 +76,7 @@ var xScaleBar = d3.scaleLinear()
 
 var yScaleBar = d3.scaleBand()
     .range([svgHeightBar, 0])
-        // Working with hard-coded country selection for now
-                                                            // TODO access checkedCountries                    
+                            
 // Define axes
 var xAxisBar = d3.axisBottom()
     .scale(xScaleBar);
@@ -96,6 +95,13 @@ var colour = {
     "East Asia and Pacific": "deeppink",
     "South Asia": "yellow"
 };
+
+// Array of column names for bar graph
+var columns = ['1st_pillar_Institutions', '2nd_pillar_Infrastructure', '3rd_pillar_Macroeconomic_environment',
+    '4th_pillar_Health_and_primary_education', '5th_pillar_Higher_education_and_training', '6th_pillar_Goods_market_efficiency',
+    '7th_pillar_Labor_market_efficiency', '8th_pillar_Financial_market_development', '9th_pillar_Technological_readiness',
+    '10th_pillar_Market_size', '11th_pillar_Business_sophistication_', '12th_pillar_Innovation'
+];
 
 /******** GLOBAL VARIABLES ************/
 
@@ -116,9 +122,10 @@ function yearFilter(value) {
 }
 
 // Filters data by selected countries
-function countryFilter(value) {                                 // TODO access all entries in checkedCountries
+function countryFilter(value) {                    // Could change to access all entries in checkedCountries
     return (value.Country == checkedCountries[0]
-        || value.Country == checkedCountries[1]);
+        || value.Country == checkedCountries[1]
+    || value.Country == checkedCountries[2]);
 }
 
 // Draw chart
@@ -129,6 +136,9 @@ function generateVis() {
 
     // Filter the data to only include the current country selection
     var filteredDatasetBar = filteredDatasetBubble.filter(countryFilter);
+
+    // Specify y-axis domain for bar graph         
+    yScaleBar.domain(columns);
     
     /******** PERFORM DATA JOIN ************/
     var circles = svgBubble.selectAll("circle")
@@ -137,9 +147,9 @@ function generateVis() {
         });
 
     var bars = svgBar.selectAll("rect")
-        .data(filteredDatasetBar, function key(d) {
-            return d.Country;
-        })
+        .data(filteredDatasetBar, function(d) {
+            return d;
+        });
 
     // Create an empty div which will hold the country label
     var countryLabel = d3.select("main")
@@ -168,21 +178,18 @@ function generateVis() {
             return colour[d['Forum classification']];
         });
 
-    bars
-        .transition()
-        .duration(1000)
-        .ease(d3.easeLinear)
-        .attr("x", 0)
-        .attr("y", function(d) {
-            return yScaleBar(d.Country);
-        })
-        .attr("height", yScaleBar.bandwidth() - 5)
-        .attr("width", function(d) {
-            return xScaleBar(d['1st_pillar_Institutions']);    // Column names that start with a digit can be accessed with this syntax
-        })
-        .style("fill", function(d) { 
-            return colour[d['Forum classification']];
-        })
+    for (i in columns) {
+        bars
+            .attr("x", 0)
+            .attr("y", yScaleBar(columns[i]))
+            .attr("height", yScaleBar.bandwidth() - 5)
+            .attr("width", function(d) {
+                return xScaleBar(d[columns[i]]);   
+            })
+            .style("fill", function(d) { 
+                return colour[d['Forum classification']];
+            })
+    }
 
     /******** HANDLE ENTER SELECTION ************/
     // Create new elements in the dataset
@@ -212,22 +219,22 @@ function generateVis() {
             return countryLabel.style("visibility", "hidden");
         });
 
-    bars.enter()
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", function(d) {
-            return yScaleBar(d.Country);
-        })
-        .attr("height", yScaleBar.bandwidth() - 5)
-        .attr("width", function(d) {
-            return xScaleBar(d['1st_pillar_Institutions']);
-        })
-        .style("fill", function(d) { 
-            return colour[d['Forum classification']];
-        })
+    for (i in columns) {
+        bars.enter()
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", yScaleBar(columns[i]))
+            .attr("height", yScaleBar.bandwidth() - 5)
+            .attr("width", function(d) {
+                return xScaleBar(d[columns[i]]);
+            })
+            .style("fill", function(d) { 
+                return colour[d['Forum classification']]
+            });
+    }
 
     /******** HANDLE EXIT SELECTION ************/
-    // Remove circles that no longer have a matching data element
+    // Remove dom elements that no longer have a matching data element
     // TODO: setting visibility to null might not be needed
     circles.exit()
         .on("mouseover", function(d) {
@@ -373,7 +380,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
         .attr("x", svgWidthBubble)
         .attr("y", svgHeightBubble - 6)
         .attr("text-anchor", "end")
-        .text("GDP");
+        .text("GDP (in billion)");
 
     // y-axis label
     svgBubble.append("text")
@@ -385,13 +392,6 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
         .text("Global Competitiveness Index");
 
     /******** BAR GRAPH ************/
-    // Get maximums and minimums where necessary
-
-    // Specify axis domains         
-    yScaleBar.domain(checkedCountries);
-
-    // Format x-axis ticks
-
     // Create and call the x-axis
     svgBar.append("g")
         .attr("class", "xAxisBar")
@@ -412,7 +412,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
     setInterval(function() {
         updateCheckedCountries();
         updateYearAndSlider();
-        console.log("Year: " + displayYear + "\nChecked Countries: ", checkedCountries);
+        // console.log("Year: " + displayYear + "\nChecked Countries: ", checkedCountries);
         generateVis();
     }, 1000);
 });
