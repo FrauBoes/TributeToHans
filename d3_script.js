@@ -201,8 +201,8 @@ d3.csv("./data/GCI_CompleteData2.csv").then(function(data) {
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
 
     // Specify axis domains
-    xScale.domain([1, max_GDP]);
-    yScale.domain([1, max_GCI]);
+    xScale.domain([100, max_GDP]);
+    yScale.domain([2, 6]);
     rScale.domain([0, max_pop]);
 
     // Format x-axis ticks
