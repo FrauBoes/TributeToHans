@@ -4,46 +4,44 @@
 <head>
 	<meta charset="utf-8">
 	<title>Channeling Hans</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Local D3 version 5 -->
 	<script type="text/javascript" src="./d3/d3_version5.js"></script>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+    <!-- Local Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Latest compiled and minified bootstrap CSS -->
+<!--     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> -->
+    <!-- Latest compiled bootstrap JavaScript -->
+<!--     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 </head>
 
 <body>
-    <h2>Channeling Hans: Population size, Global Competitive Index & GDP</h2>
     <div id="wrapper">
-    <div class="row">
-        <main class="col-8">
-            <!-- main svg canvas drawn in here by js -->
-        </main>
-        <aside class="col-4">
-            <!-- secondary svg canvas drawn in here -->
-        </aside>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <h2>Timeline</h2>
-            <h3 id="year_header">2008</h3>
-            <div class="slidecontainer">
-                <button type="button" id="yearRangeBtn">Stop</button>
-                <input type="range" min="2008" max="2017" value="2008" class="slider" id="yearRange">
+        <main>
+            <div id="mainTitle">Channeling Hans: Population size, Global Competitive Index & GDP</div>
+            <div id="mainChart"></div>
+            <div>
+                <div id="slidecontainer">
+                    <button id="yearRangeBtn" type="button">Stop</button>
+                    <input id="yearRange" type="range" min="2008" max="2017" value="2008" class="slider">
+                    <div id="year_header">2008</div>
+                </div>
             </div>
-        </div>
-        <div class="col-4">
-            <input type="text" id="countrySearchInput" onkeyup="countrySearch()" placeholder="Search for names..">
-            <form id="countrySearchList">
-                <!-- country names written by js -->
-            </form>
-        </div>
-    </div>
-        <script type="text/javascript" src="d3_script.js"></script> <!-- The D3 script is now in d3_script.js -->
-    </div>
+        </main>
+        <aside>
+            <div id="secondaryChart"></div>
+            <div id="listContainer">
+                <input id="countrySearchInput"type="text" onkeyup="countrySearch()" placeholder="Search for names..">
+                <form id="countrySearchList">
+                    <!-- country names written by js -->
+                </form>
+            </div>
+        </aside>
+    <div>
+    <script type="text/javascript" src="d3_script.js"></script>
 </body>	 
 </html>

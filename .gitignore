@@ -9,6 +9,7 @@ lib/
 themes/
 examples/
 examples/*
+test/
 
 
 # Files
