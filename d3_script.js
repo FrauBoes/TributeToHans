@@ -169,16 +169,19 @@ function countryFilter(value) {                    // Could change to access all
  
 // Function for assigning bar graph colours
 var barColor = ["Crimson", "DeepSkyBlue", "ForestGreen"]
-var selection = 0;
-function get_colour() { 
-    var temp = barColor[barColor.length - 1];
-    if (selection != checkedCountries.length) {
-        barColor.pop();
-        barColor.unshift(temp);
-        selection = checkedCountries.length;
+var assignedColor = {} // dict. which stores country: color pairs
+function assignColor() {
+    for (var i = 0; i < checkedCountries.length; i++) {
+        assignedColor[checkedCountries[i]] = barColor[i];
     }
-    return temp
-} 
+}
+
+function updateBarLegend(){
+    var legend = $("#barLegend");
+    legend.empty();
+    for (var i = 0; i < checkedCountries.length; i++)
+        legend.append(`<li><span style="background-color: ${assignedColor[checkedCountries[i]]}"></span>${checkedCountries[i]}</li>`);
+}
 
 // Used in group bar chart when getting country colour
 // returns an item in dataset x which contains the country specified.
@@ -239,8 +242,15 @@ class Visualisation {
     }
 
     barChart() {
+
         // Only if any countries have been selected
         if (checkedCountries.length > 0) {
+
+            // assign a color to each group of basrs in the chart
+            assignColor();
+
+            // update bar chart's legend
+            updateBarLegend();
 
             // Filter the data to only include the current country selection
             var filteredDatasetBar = this.yearData.filter(countryFilter);
@@ -300,9 +310,7 @@ class Visualisation {
                 .duration(500)
                 .ease(d3.easeLinear)
                 .attr("width", function(d) { return xScaleBar(+d.value); })
-                .style("fill", function(d) { 
-                    return colour[get_item(filteredDatasetBar, d.key)['Forum classification']];
-                });
+                .style("fill", function(d) { return assignedColor[d.key]; });
 
             // Handle indiviudal bars update
             bars
@@ -314,6 +322,12 @@ class Visualisation {
 
             // Handle bars exit
             bars.exit().remove();
+
+            var legend = svgBar.selectAll(".legend")
+                .data(checkedCountries)
+                .enter()
+                .append("g")
+
         }
     }    
 } 

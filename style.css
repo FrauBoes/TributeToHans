@@ -102,7 +102,18 @@ circle {
     box-sizing: border-box;
 }*/
 
-#LabelContainer{
+#legendContainer{
     width: 50%;
     height: 25%;
+}
+
+#barLegend { 
+    list-style: none; 
+}
+
+#barLegend span {
+    width: 15px; 
+    height: 15px; 
+    margin: 2px; 
+    display: inline-block;
 }
