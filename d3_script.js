@@ -207,9 +207,7 @@ class Visualisation {
 
         /******** PERFORM DATA JOIN ************/
         var circles = svgBubble.selectAll("circle")
-            .data(this.yearData, function key(d) {
-                return d.Country;
-            });
+            .data(this.yearData, function key(d) { return d.Country; });
 
         /******** HANDLE UPDATE SELECTION ************/
         // Update the display of existing elements to match new data
@@ -221,6 +219,9 @@ class Visualisation {
         .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
         .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
         .style("fill", function(d) { return colour[d['Forum classification']]; });
+        // .filter(function(d) {
+        //     return d.Country != "China"
+        // }).append("circle");
 
         /******** HANDLE ENTER SELECTION ************/
         // Create new elements in the dataset
@@ -246,7 +247,7 @@ class Visualisation {
         // Only if any countries have been selected
         if (checkedCountries.length > 0) {
 
-            // assign a color to each group of basrs in the chart
+            // assign a color to each group of bars in the chart
             assignColor();
 
             // update bar chart's legend
