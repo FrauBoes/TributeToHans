@@ -88,7 +88,7 @@ var marginBar = {
 };
 
 // Width and height
-var outerWidthBar = 500;
+var outerWidthBar = 300;
 var outerHeightBar = 400;
 var svgWidthBar = outerWidthBar - marginBar.left - marginBar.right;
 var svgHeightBar = outerHeightBar - marginBar.top - marginBar.bottom;
@@ -119,7 +119,8 @@ var yScaleBar_inner = d3.scaleBand()
                             
 // Define axes
 var xAxisBar = d3.axisBottom()
-    .scale(xScaleBar);
+    .scale(xScaleBar)
+    .ticks(5);
 
 var yAxisBar = d3.axisLeft()
     .scale(yScaleBar_outer)
@@ -420,7 +421,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
     
     // Specify axis domains
-    xScaleBubble.domain([300, max_GDP]);
+    xScaleBubble.domain([100, max_GDP]);
     yScaleBubble.domain([2, 6]);
     rScaleBubble.domain([0, max_pop]);
 

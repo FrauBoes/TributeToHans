@@ -18,8 +18,8 @@
 
 <body>
     <div id="wrapper">
+        <div id="mainTitle">Channeling Hans: Population, Global Competitive Index & GDP</div>
         <main>
-            <div id="mainTitle">Channeling Hans: Population size, Global Competitive Index & GDP</div>
             <div id="mainChart"></div>
             <div>
                 <div id="slidecontainer">
@@ -27,12 +27,16 @@
                     <input id="yearRange" type="range" min="2008" max="2017" value="2008" class="slider">
                     <div id="year_header">2008</div>
                 </div>
+                <div id="trailSelector">
+                    <span>Trail</span>
+                    <input id="trailSelectorInput" type="checkbox" name="trailSelectorInput">
+                </div>
             </div>
         </main>
         <aside>
             <div id="secondaryChart"></div>
             <div id="listContainer">
-                <input id="countrySearchInput"type="text" onkeyup="countrySearch()" placeholder="Search for names..">
+                <input id="countrySearchInput"type="text" onkeyup="countrySearch()" placeholder="Search for a country">
                 <form id="countrySearchList">
                     <!-- country names written by js -->
                 </form>
