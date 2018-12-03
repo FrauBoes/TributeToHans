@@ -16,7 +16,6 @@ var trace = true;
 /******** BUBBLE GRAPH ************/
 
 // Create an empty div which will hold the country label
-// Should be outside function or it will generate a new div every second!
 var countryLabel = d3.select("main")
     .append("div")
     .style("position", "absolute")
@@ -128,19 +127,13 @@ var yAxisBar = d3.axisLeft()
         return columnNames[d] 
     });
 
-// Array of column names for bar graph
-var columns = ['1st_pillar_Institutions', '2nd_pillar_Infrastructure', '3rd_pillar_Macroeconomic_environment',
-    '4th_pillar_Health_and_primary_education', '5th_pillar_Higher_education_and_training', '6th_pillar_Goods_market_efficiency',
-    '7th_pillar_Labor_market_efficiency', '8th_pillar_Financial_market_development', '9th_pillar_Technological_readiness',
-    '10th_pillar_Market_size', '11th_pillar_Business_sophistication_', '12th_pillar_Innovation'
-];
-
+// Mapping of column names and strings for tick label for bar graph
 var columnNames = {
     '1st_pillar_Institutions': 'Institutions', 
     '2nd_pillar_Infrastructure': 'Infrastructure', 
     '3rd_pillar_Macroeconomic_environment': 'Macroeconomic Env',
     '4th_pillar_Health_and_primary_education': 'Health & Primary Edu.', 
-    '5th_pillar_Higher_education_and_training': 'Higher Edu. and Training', 
+    '5th_pillar_Higher_education_and_training': 'Higher Edu. & Training', 
     '6th_pillar_Goods_market_efficiency': 'Goods Market Efficiency',
     '7th_pillar_Labor_market_efficiency': 'Labor Market Efficiency', 
     '8th_pillar_Financial_market_development': 'Financial Market Develop.', 
@@ -160,15 +153,15 @@ function yearFilter(value) {
         && value.Population != 0);
 }
 
-// Filters data by selected countries
-function countryFilter(value) {                    // Could change to access all entries in checkedCountries
+// Filters data by selected countries (limited to 3)
+function countryFilter(value) {                  
     return (value.Country == checkedCountries[0]
         || value.Country == checkedCountries[1]
     || value.Country == checkedCountries[2]);
 }
  
 // Function for assigning bar graph colours
-var barColor = ["Crimson", "DeepSkyBlue", "ForestGreen"]
+var barColor = ["#d9d9d9", "#969696", "#ffffff"]
 var assignedColor = {} // dict. which stores country: color pairs
 function assignColor() {
     for (var i = 0; i < checkedCountries.length; i++) {
@@ -193,6 +186,7 @@ function get_item(x, Country) {
     }
 }
 
+// Visualisation class with methods for each chart and year filtering
 class Visualisation {
     constructor(data) {
         this.dataset = data;
@@ -244,92 +238,95 @@ class Visualisation {
 
     barChart() {
 
-        // Only if any countries have been selected
-        if (checkedCountries.length > 0) {
+        // Assign a color to each group of bars in the chart
+        assignColor();
 
-            // assign a color to each group of bars in the chart
-            assignColor();
+        // Update bar chart's legend
+        updateBarLegend();
 
-            // update bar chart's legend
-            updateBarLegend();
+        // Filter the data to only include the current country selection
+        var filteredDatasetBar = this.yearData.filter(countryFilter);
 
-            // Filter the data to only include the current country selection
-            var filteredDatasetBar = this.yearData.filter(countryFilter);
-
-            // Data must be transposed to create the bar chart.
-            var transposedData = [];        
-            for (var i = 0; i < columns.length; i++) {
-                var IndexObj = {"Index": columns[i]};
-                for (var j = 0; j < filteredDatasetBar.length; j++) {
-                    IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
-                }
-                transposedData.push(IndexObj);
+        // Data must be transposed to create the bar chart
+        var transposedData = [];        
+        for (var key in columnNames) {
+            var IndexObj = {"Index": key};
+            for (var j = 0; j < filteredDatasetBar.length; j++) {
+                IndexObj[filteredDatasetBar[j]["Country"]] = filteredDatasetBar[j][key];
             }
+            transposedData.push(IndexObj);
+        }
 
-            // Keys of the data objects
-            var keys = Object.keys(transposedData[1]);
+        // Keys of the data objects
+        var keys = Object.keys(transposedData[1]);
 
-            // Specify axis scale of each group
-            yScaleBar_inner.domain(keys)
-                .range([yScaleBar_outer.bandwidth(), 0]);
-      
-            // Assign data to bar groups
-            var barGroups = svgBar.selectAll("g.barGroup")
-                                .data(transposedData);
+        // Specify axis scale of each group
+        yScaleBar_inner.domain(keys)
+            .range([yScaleBar_outer.bandwidth(), 0]);
+  
+        /******** PERFORM DATA JOIN ************/
+        // Assign data to bar groups
+        var barGroups = svgBar.selectAll("g.barGroup")
+                            .data(transposedData);
 
-            // Handle bar group enter
-            barGroups
-            .enter()
-                .append("g")
-                .classed('barGroup', true)
-            .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
-
-            // Handle bar group exit
-            barGroups.exit().remove();
-
-            // Assign data to individual bars 
-            var bars = svgBar
-            .selectAll("g.barGroup")
-            .selectAll("rect")
-            .data(function(d) {
-                var array = []
-                for (var i = 0; i < keys.length; i++) {
-                    if (keys[i] != "Index") {
-                        array.push({key: keys[i], value: d[keys[i]]})
-                    }
+        // Assign data to individual bars 
+        var bars = svgBar
+        .selectAll("g.barGroup")
+        .selectAll("rect")
+        .data(function(d) {
+            var array = []
+            for (var i = 0; i < keys.length; i++) {
+                if (keys[i] != "Index") {
+                    array.push({key: keys[i], value: d[keys[i]]})
                 }
-                return array;
-            });
-            
-            // Handle individual bars enter
-            bars
-            .enter().append("rect")
-                .attr("x", 0)
-                .attr("y", function(d) { return yScaleBar_inner(d.key); })
-                .attr("height", yScaleBar_inner.bandwidth())
-                .transition()
-                .duration(500)
-                .ease(d3.easeLinear)
-                .attr("width", function(d) { return xScaleBar(+d.value); })
-                .style("fill", function(d) { return assignedColor[d.key]; });
+            }
+            return array;
+        });
 
-            // Handle indiviudal bars update
-            bars
+        // Assign data to legend
+        var legend = svgBar.selectAll(".legend")
+            .data(checkedCountries);
+
+        /******** HANDLE UPDATE SELECTION ************/
+        // Individual bars update
+        bars
             .attr("y", function(d) { return yScaleBar_inner(d.key); })
             .transition()
             .duration(1000)
             .ease(d3.easeLinear)
             .attr("width", function(d) { return xScaleBar(+d.value); })
+            .style("fill", function(d) { return assignedColor[d.key]; });
 
-            // Handle bars exit
-            bars.exit().remove();
+        /******** HANDLE ENTER SELECTION ************/
+        // Bar group enter
+        barGroups
+        .enter().append("g")
+            .classed('barGroup', true)
+            .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
 
-            var legend = svgBar.selectAll(".legend")
-                .data(checkedCountries)
-                .enter()
-                .append("g")
+        // Legend enter
+        legend
+        .enter().append("g");
 
-        }
+        // Individual bars enter
+        bars
+        .enter().append("rect")
+            .attr("x", 0)
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .attr("height", yScaleBar_inner.bandwidth())
+            .transition()
+            .duration(500)
+            .ease(d3.easeLinear)
+            .attr("width", function(d) { return xScaleBar(+d.value); })
+            .style("fill", function(d) { return assignedColor[d.key]; });
+
+        
+        /******** HANDLE EXIT SELECTION ************/
+        // Bar group exit
+        barGroups.exit().remove();
+
+        // Handle bars exit
+        bars.exit().remove();
     }    
 } 
 
@@ -410,14 +407,21 @@ function countrySearch(){
 function updateCheckedCountries(){
     var countries = $("#countrySearchList").children("input");
 
-    // Clear old selection
-    checkedCountries = [];
-
-    for (var i = 0; i < countries.length; i++) {
+    for (var i = 0; i < countries.length; i++) {    // Loop through countries
+        var index = checkedCountries.indexOf(countries[i].value);    // Get index of country in checkedCountries
         if (countries[i].checked) {
-            checkedCountries.push(countries[i].value);
+            if (index == -1) {    // Add country if it's not in the checkedCountry array already
+                checkedCountries.push(countries[i].value);
+            }
+        } else {
+            if (index != -1) {    // Otherwise remove it 
+                checkedCountries.splice(index,1);
+            }
         }
     }
+
+    // Update barChart when checkedCountries is changed
+    v.barChart();
 }
 
 
@@ -479,7 +483,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
     /******** BAR GRAPH ************/
 
     // Specify y-axis domain for bar graph         
-    yScaleBar_outer.domain(columns);
+    yScaleBar_outer.domain(Object.keys(columnNames));
 
     // Create and call the x-axis
     svgBar.append("g")
@@ -494,6 +498,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
         .attr("id", "yAxisBar")
         .call(yAxisBar);
 
+    // Initiate visualisation object
     v = new Visualisation(dataset);
 
     // Filter the data by year
@@ -509,7 +514,9 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
             filterByYearAndSlider();
             v.filterByYear();
             v.circleChart();
-            v.barChart();
         }
+        // When not running, still update checkedCountries for bar chart
+        updateCheckedCountries();
+
     }, 1000);
 });
