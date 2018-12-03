@@ -35,7 +35,7 @@ aside {
 }
 
 #listContainer {
-    width: 100%;
+    width: 50%;
     height: 25%;
 }
 
@@ -95,3 +95,7 @@ circle {
     box-sizing: border-box;
 }*/
 
+#legendContainer{
+    width: 50%;
+    height: 25%;
+}
