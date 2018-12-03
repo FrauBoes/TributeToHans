@@ -257,7 +257,15 @@ function generateVis() {
         var bars = svgBar
         .selectAll("g.barGroup")
         .selectAll("rect")
-        .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; })})
+        .data(function(d) {     // Remove first entry of each dictionary
+            array = []
+            for (var i = 0; i < keys.length; i++) {
+                if (keys[i] != "Index") {
+                    array.push({key: keys[i], value: d[keys[i]]})
+                }
+            }
+            return array;
+        });
 
         // Handle individual bars enter
         bars
