@@ -12,18 +12,19 @@ body {
 }
 
 main {
-    width: 60%;
+    width: 70%;
     flex-direction: column;
     align-items: left;
 }
 
 #mainTitle {
-    font-size: 18pt;
+    font-size: 24px;
     font-weight: bold;   
+    flex-direction: row;
 }
 
 aside {
-    width: 40%;
+    width: 30%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -37,6 +38,7 @@ aside {
 #listContainer {
     width: 50%;
     height: 25%;
+    font-size: 11px;
 }
 
 #countrySearchList {
@@ -72,6 +74,10 @@ aside {
     opacity: 1;
 }
 
+#trailSelector {
+    font-size: 11px;
+}
+
 /* Graph element styles */
 
 circle {
@@ -96,7 +102,7 @@ circle {
     box-sizing: border-box;
 }*/
 
-#legendContainer{
+#LabelContainer{
     width: 50%;
     height: 25%;
 }
