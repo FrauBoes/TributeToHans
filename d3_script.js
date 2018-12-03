@@ -160,8 +160,8 @@ function yearFilter(value) {
         && value.Population != 0);
 }
 
-// Filters data by selected countries
-function countryFilter(value) {                    // Could change to access all entries in checkedCountries
+// Filters data by selected countries (limited to 3)
+function countryFilter(value) {                  
     return (value.Country == checkedCountries[0]
         || value.Country == checkedCountries[1]
     || value.Country == checkedCountries[2]);
@@ -243,99 +243,95 @@ class Visualisation {
 
     barChart() {
 
-        // Only if any countries have been selected
-        if (checkedCountries.length > 0) {
+        // Assign a color to each group of bars in the chart
+        assignColor();
 
-            // Assign a color to each group of bars in the chart
-            assignColor();
+        // Update bar chart's legend
+        updateBarLegend();
 
-            // Update bar chart's legend
-            updateBarLegend();
+        // Filter the data to only include the current country selection
+        var filteredDatasetBar = this.yearData.filter(countryFilter);
 
-            // Filter the data to only include the current country selection
-            var filteredDatasetBar = this.yearData.filter(countryFilter);
-
-            // Data must be transposed to create the bar chart
-            var transposedData = [];        
-            for (var i = 0; i < columns.length; i++) {
-                var IndexObj = {"Index": columns[i]};
-                for (var j = 0; j < filteredDatasetBar.length; j++) {
-                    IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
-                }
-                transposedData.push(IndexObj);
+        // Data must be transposed to create the bar chart
+        var transposedData = [];        
+        for (var i = 0; i < columnNames.length; i++) {
+            var IndexObj = {"Index": columns[i]};
+            for (var j = 0; j < filteredDatasetBar.length; j++) {
+                IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
             }
-
-            // Keys of the data objects
-            var keys = Object.keys(transposedData[1]);
-
-            // Specify axis scale of each group
-            yScaleBar_inner.domain(keys)
-                .range([yScaleBar_outer.bandwidth(), 0]);
-      
-            /******** PERFORM DATA JOIN ************/
-            // Assign data to bar groups
-            var barGroups = svgBar.selectAll("g.barGroup")
-                                .data(transposedData);
-
-            // Assign data to individual bars 
-            var bars = svgBar
-            .selectAll("g.barGroup")
-            .selectAll("rect")
-            .data(function(d) {
-                var array = []
-                for (var i = 0; i < keys.length; i++) {
-                    if (keys[i] != "Index") {
-                        array.push({key: keys[i], value: d[keys[i]]})
-                    }
-                }
-                return array;
-            });
-
-            // Assign data to legend
-            var legend = svgBar.selectAll(".legend")
-                .data(checkedCountries);
-
-            /******** HANDLE UPDATE SELECTION ************/
-            // Individual bars update
-            bars
-                .attr("y", function(d) { return yScaleBar_inner(d.key); })
-                .transition()
-                .duration(1000)
-                .ease(d3.easeLinear)
-                .attr("width", function(d) { return xScaleBar(+d.value); })
-                .style("fill", function(d) { return assignedColor[d.key]; });
-
-            /******** HANDLE ENTER SELECTION ************/
-            // Bar group enter
-            barGroups
-            .enter().append("g")
-                .classed('barGroup', true)
-                .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
-
-            // Legend enter
-            legend
-            .enter().append("g");
-
-            // Individual bars enter
-            bars
-            .enter().append("rect")
-                .attr("x", 0)
-                .attr("y", function(d) { return yScaleBar_inner(d.key); })
-                .attr("height", yScaleBar_inner.bandwidth())
-                .transition()
-                .duration(500)
-                .ease(d3.easeLinear)
-                .attr("width", function(d) { return xScaleBar(+d.value); })
-                .style("fill", function(d) { return assignedColor[d.key]; });
-
-            
-            /******** HANDLE EXIT SELECTION ************/
-            // Bar group exit
-            barGroups.exit().remove();
-
-            // Handle bars exit
-            bars.exit().remove();
+            transposedData.push(IndexObj);
         }
+
+        // Keys of the data objects
+        var keys = Object.keys(transposedData[1]);
+
+        // Specify axis scale of each group
+        yScaleBar_inner.domain(keys)
+            .range([yScaleBar_outer.bandwidth(), 0]);
+  
+        /******** PERFORM DATA JOIN ************/
+        // Assign data to bar groups
+        var barGroups = svgBar.selectAll("g.barGroup")
+                            .data(transposedData);
+
+        // Assign data to individual bars 
+        var bars = svgBar
+        .selectAll("g.barGroup")
+        .selectAll("rect")
+        .data(function(d) {
+            var array = []
+            for (var i = 0; i < keys.length; i++) {
+                if (keys[i] != "Index") {
+                    array.push({key: keys[i], value: d[keys[i]]})
+                }
+            }
+            return array;
+        });
+
+        // Assign data to legend
+        var legend = svgBar.selectAll(".legend")
+            .data(checkedCountries);
+
+        /******** HANDLE UPDATE SELECTION ************/
+        // Individual bars update
+        bars
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .transition()
+            .duration(1000)
+            .ease(d3.easeLinear)
+            .attr("width", function(d) { return xScaleBar(+d.value); })
+            .style("fill", function(d) { return assignedColor[d.key]; });
+
+        /******** HANDLE ENTER SELECTION ************/
+        // Bar group enter
+        barGroups
+        .enter().append("g")
+            .classed('barGroup', true)
+            .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
+
+        // Legend enter
+        legend
+        .enter().append("g");
+
+        // Individual bars enter
+        bars
+        .enter().append("rect")
+            .attr("x", 0)
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .attr("height", yScaleBar_inner.bandwidth())
+            .transition()
+            .duration(500)
+            .ease(d3.easeLinear)
+            .attr("width", function(d) { return xScaleBar(+d.value); })
+            .style("fill", function(d) { return assignedColor[d.key]; });
+
+        
+        /******** HANDLE EXIT SELECTION ************/
+        // Bar group exit
+        barGroups.exit().remove();
+
+        // Handle bars exit
+        bars.exit().remove();
     }    
 } 
 
@@ -417,9 +413,7 @@ function updateCheckedCountries(){
     var countries = $("#countrySearchList").children("input");
 
     for (var i = 0; i < countries.length; i++) {    // Loop through countries
-
         var index = checkedCountries.indexOf(countries[i].value);    // Get index of country in checkedCountries
-
         if (countries[i].checked) {
             if (index == -1) {    // Add country if it's not in the checkedCountry array already
                 checkedCountries.push(countries[i].value);
@@ -430,6 +424,9 @@ function updateCheckedCountries(){
             }
         }
     }
+
+    // Update barChart when checkedCountries is changed
+    v.barChart();
 }
 
 
@@ -506,6 +503,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
         .attr("id", "yAxisBar")
         .call(yAxisBar);
 
+    // Initiate visualisation object
     v = new Visualisation(dataset);
 
     // Filter the data by year
@@ -521,7 +519,9 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
             filterByYearAndSlider();
             v.filterByYear();
             v.circleChart();
-            v.barChart();
         }
+        // When not running, still update checkedCountries for bar chart
+        updateCheckedCountries();
+
     }, 1000);
 });
