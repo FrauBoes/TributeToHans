@@ -10,6 +10,9 @@ checkedCountries = [];
 // Stores visualisation class
 var v;
 
+// Trace checked countries?
+var trace = true;
+
 /******** BUBBLE GRAPH ************/
 
 // Create an empty div which will hold the country label
@@ -176,6 +179,16 @@ function get_colour() {
     return temp
 } 
 
+// Used in group bar chart when getting country colour
+// returns an item in dataset x which contains the country specified.
+function get_item(x, Country) {
+    for (var i = 0; i < x.length; i++) {
+        if (x[i]["Country"] == Country) {
+            return x[i]
+        }
+    }
+}
+
 class Visualisation {
     constructor(data) {
         this.dataset = data;
@@ -197,32 +210,31 @@ class Visualisation {
         /******** HANDLE UPDATE SELECTION ************/
         // Update the display of existing elements to match new data
         circles
-            .transition()
-            .duration(1000)
-            .ease(d3.easeLinear)
-            .attr("cx", function(d) { return xScaleBubble(d.GDP); })
-            .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
-            .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
-            .style("fill", function(d) { return colour[d['Forum classification']]; });
+        .transition()
+        .duration(1000)
+        .ease(d3.easeLinear)
+        .attr("cx", function(d) { return xScaleBubble(d.GDP); })
+        .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
+        .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
+        .style("fill", function(d) { return colour[d['Forum classification']]; });
 
         /******** HANDLE ENTER SELECTION ************/
         // Create new elements in the dataset
         circles.enter()
-            .append("circle")
-            .attr("cx", function(d) { return xScaleBubble(d.GDP); })
-            .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
-            .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
-            .style("fill", function(d) { return colour[d['Forum classification']]; })
-            .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").text(d.Country);})
-            .on("mousemove", function() {
-                return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
-            })
-            .on("mouseout", function() { return countryLabel.style("visibility", "hidden"); });
+        .append("circle")
+        .attr("cx", function(d) { return xScaleBubble(d.GDP); })
+        .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
+        .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
+        .style("fill", function(d) { return colour[d['Forum classification']]; })
+        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").text(d.Country);})
+        .on("mousemove", function() {
+            return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+        })
+        .on("mouseout", function() { return countryLabel.style("visibility", "hidden"); });
 
         /******** HANDLE EXIT SELECTION ************/
         // Remove dom elements that no longer have a matching data element
-        // TODO: setting visibility to null might not be needed
-        circles.exit().remove();
+        circles.exit().remove()
     }
 
     barChart() {
@@ -287,7 +299,9 @@ class Visualisation {
                 .duration(500)
                 .ease(d3.easeLinear)
                 .attr("width", function(d) { return xScaleBar(+d.value); })
-                .style("fill", get_colour())
+                .style("fill", function(d) { 
+                    return colour[get_item(filteredDatasetBar, d.key)['Forum classification']];
+                });
 
             // Handle indiviudal bars update
             bars
