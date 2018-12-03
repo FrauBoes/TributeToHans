@@ -86,6 +86,12 @@ circle {
     stroke-opacity: 0.8;
 }
 
+rect {
+    stroke: #222;
+    fill-opacity: 0.3;
+    stroke-opacity: 0.8;
+}
+
 .axis path, .axis line {
 	fill: none;
 	stroke: black;
@@ -122,4 +128,7 @@ circle {
     height: 15px; 
     margin: 2px; 
     display: inline-block;
+    border-style: solid;
+    border-width: thin;
+    border-color: #222;
 }
