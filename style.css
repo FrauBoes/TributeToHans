@@ -42,6 +42,7 @@ aside {
 #countrySearchList {
     height: 150px;
     overflow: scroll;
+    align-items: center;
 }
 
 /* Slider styling */ 
