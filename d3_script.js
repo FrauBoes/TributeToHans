@@ -16,7 +16,6 @@ var trace = true;
 /******** BUBBLE GRAPH ************/
 
 // Create an empty div which will hold the country label
-// Should be outside function or it will generate a new div every second!
 var countryLabel = d3.select("main")
     .append("div")
     .style("position", "absolute")
@@ -128,19 +127,13 @@ var yAxisBar = d3.axisLeft()
         return columnNames[d] 
     });
 
-// Array of column names for bar graph
-var columns = ['1st_pillar_Institutions', '2nd_pillar_Infrastructure', '3rd_pillar_Macroeconomic_environment',
-    '4th_pillar_Health_and_primary_education', '5th_pillar_Higher_education_and_training', '6th_pillar_Goods_market_efficiency',
-    '7th_pillar_Labor_market_efficiency', '8th_pillar_Financial_market_development', '9th_pillar_Technological_readiness',
-    '10th_pillar_Market_size', '11th_pillar_Business_sophistication_', '12th_pillar_Innovation'
-];
-
+// Mapping of column names and strings for tick label for bar graph
 var columnNames = {
     '1st_pillar_Institutions': 'Institutions', 
     '2nd_pillar_Infrastructure': 'Infrastructure', 
     '3rd_pillar_Macroeconomic_environment': 'Macroeconomic Env',
     '4th_pillar_Health_and_primary_education': 'Health & Primary Edu.', 
-    '5th_pillar_Higher_education_and_training': 'Higher Edu. and Training', 
+    '5th_pillar_Higher_education_and_training': 'Higher Edu. & Training', 
     '6th_pillar_Goods_market_efficiency': 'Goods Market Efficiency',
     '7th_pillar_Labor_market_efficiency': 'Labor Market Efficiency', 
     '8th_pillar_Financial_market_development': 'Financial Market Develop.', 
@@ -193,6 +186,7 @@ function get_item(x, Country) {
     }
 }
 
+// Visualisation class with methods for each chart and year filtering
 class Visualisation {
     constructor(data) {
         this.dataset = data;
@@ -254,10 +248,10 @@ class Visualisation {
 
         // Data must be transposed to create the bar chart
         var transposedData = [];        
-        for (var i = 0; i < columnNames.length; i++) {
-            var IndexObj = {"Index": columns[i]};
+        for (var key in columnNames) {
+            var IndexObj = {"Index": key};
             for (var j = 0; j < filteredDatasetBar.length; j++) {
-                IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
+                IndexObj[filteredDatasetBar[j]["Country"]] = filteredDatasetBar[j][key];
             }
             transposedData.push(IndexObj);
         }
@@ -488,7 +482,7 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
     /******** BAR GRAPH ************/
 
     // Specify y-axis domain for bar graph         
-    yScaleBar_outer.domain(columns);
+    yScaleBar_outer.domain(Object.keys(columnNames));
 
     // Create and call the x-axis
     svgBar.append("g")
