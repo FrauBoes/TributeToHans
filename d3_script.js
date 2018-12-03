@@ -7,6 +7,8 @@ displayYear = 2008;
 // Countries which are selected in the search list stored in array
 checkedCountries = [];
 
+// Stores visualisation class
+var v;
 
 /******** BUBBLE GRAPH ************/
 
@@ -172,117 +174,134 @@ function get_colour() {
         selection = checkedCountries.length;
     }
     return temp
-}      
+} 
 
-// Draw chart
-function generateVis() {
+class Visualisation {
+    constructor(data) {
+        this.dataset = data;
+        this.yearData;
+    }
 
-    // Filter the data to only include the current year
-    var filteredDatasetBubble = dataset.filter(yearFilter);
-    
-    /******** PERFORM DATA JOIN ************/
-    var circles = svgBubble.selectAll("circle")
-        .data(filteredDatasetBubble, function key(d) {
-            return d.Country;
-        });
+    filterByYear() {
+        this.yearData = this.dataset.filter(yearFilter);
+    }
 
-    /******** HANDLE UPDATE SELECTION ************/
-    // Update the display of existing elements to match new data
-    circles
-        .transition()
-        .duration(1000)
-        .ease(d3.easeLinear)
-        .attr("cx", function(d) { return xScaleBubble(d.GDP); })
-        .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
-        .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
-        .style("fill", function(d) { return colour[d['Forum classification']]; });
+    circleChart() {
 
-    /******** HANDLE ENTER SELECTION ************/
-    // Create new elements in the dataset
-    circles.enter()
-        .append("circle")
-        .attr("cx", function(d) { return xScaleBubble(d.GDP); })
-        .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
-        .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
-        .style("fill", function(d) { return colour[d['Forum classification']]; })
-        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").text(d.Country);})
-        .on("mousemove", function() {
-            return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
-        })
-        .on("mouseout", function() { return countryLabel.style("visibility", "hidden"); });
+        /******** PERFORM DATA JOIN ************/
+        var circles = svgBubble.selectAll("circle")
+            .data(this.yearData, function key(d) {
+                return d.Country;
+            });
 
-    /******** HANDLE EXIT SELECTION ************/
-    // Remove dom elements that no longer have a matching data element
-    // TODO: setting visibility to null might not be needed
-    circles.exit().remove();
-
-    // Only if any countries have been selected
-    if (checkedCountries.length > 0) {
-
-        // Filter the data to only include the current country selection
-        var filteredDatasetBar = filteredDatasetBubble.filter(countryFilter);
-
-        // Data must be transposed to create the bar chart.
-        transposedData = [];        
-        for (var i = 0; i < columns.length; i++) {
-            var IndexObj = {"Index": columns[i]};
-            for (var j = 0; j < filteredDatasetBar.length; j++) {
-                IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
-            }
-            transposedData.push(IndexObj);
-        }
-
-        // Keys of the data objects
-        var keys = Object.keys(transposedData[1]);
-
-        // Specify axis scale of each group
-        yScaleBar_inner.domain(keys)
-            .range([yScaleBar_outer.bandwidth(), 0]);
-  
-        // Assign data to bar groups
-        var barGroups = svgBar.selectAll("g.barGroup")
-                            .data(transposedData);
-
-        // Handle bar group enter
-        barGroups
-        .enter()
-            .append("g")
-            .classed('barGroup', true)
-        .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
-
-        // Handle bar group exit
-        barGroups.exit().remove();
-
-        // Assign data to individual bars 
-        var bars = svgBar
-        .selectAll("g.barGroup")
-        .selectAll("rect")
-        .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; })})
-
-        // Handle individual bars enter
-        bars
-        .enter().append("rect")
-            .attr("x", 0)
-            .attr("y", function(d) { return yScaleBar_inner(d.key); })
-            .attr("height", yScaleBar_inner.bandwidth())
+        /******** HANDLE UPDATE SELECTION ************/
+        // Update the display of existing elements to match new data
+        circles
             .transition()
-            .duration(500)
+            .duration(1000)
+            .ease(d3.easeLinear)
+            .attr("cx", function(d) { return xScaleBubble(d.GDP); })
+            .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
+            .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
+            .style("fill", function(d) { return colour[d['Forum classification']]; });
+
+        /******** HANDLE ENTER SELECTION ************/
+        // Create new elements in the dataset
+        circles.enter()
+            .append("circle")
+            .attr("cx", function(d) { return xScaleBubble(d.GDP); })
+            .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
+            .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
+            .style("fill", function(d) { return colour[d['Forum classification']]; })
+            .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").text(d.Country);})
+            .on("mousemove", function() {
+                return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
+            })
+            .on("mouseout", function() { return countryLabel.style("visibility", "hidden"); });
+
+        /******** HANDLE EXIT SELECTION ************/
+        // Remove dom elements that no longer have a matching data element
+        // TODO: setting visibility to null might not be needed
+        circles.exit().remove();
+    }
+
+    barChart() {
+        // Only if any countries have been selected
+        if (checkedCountries.length > 0) {
+
+            // Filter the data to only include the current country selection
+            var filteredDatasetBar = this.yearData.filter(countryFilter);
+
+            // Data must be transposed to create the bar chart.
+            var transposedData = [];        
+            for (var i = 0; i < columns.length; i++) {
+                var IndexObj = {"Index": columns[i]};
+                for (var j = 0; j < filteredDatasetBar.length; j++) {
+                    IndexObj[ filteredDatasetBar[j]["Country"] ] = filteredDatasetBar[j][ columns[i] ];
+                }
+                transposedData.push(IndexObj);
+            }
+
+            // Keys of the data objects
+            var keys = Object.keys(transposedData[1]);
+
+            // Specify axis scale of each group
+            yScaleBar_inner.domain(keys)
+                .range([yScaleBar_outer.bandwidth(), 0]);
+      
+            // Assign data to bar groups
+            var barGroups = svgBar.selectAll("g.barGroup")
+                                .data(transposedData);
+
+            // Handle bar group enter
+            barGroups
+            .enter()
+                .append("g")
+                .classed('barGroup', true)
+            .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
+
+            // Handle bar group exit
+            barGroups.exit().remove();
+
+            // Assign data to individual bars 
+            var bars = svgBar
+            .selectAll("g.barGroup")
+            .selectAll("rect")
+            .data(function(d) {
+                var array = []
+                for (var i = 0; i < keys.length; i++) {
+                    if (keys[i] != "Index") {
+                        array.push({key: keys[i], value: d[keys[i]]})
+                    }
+                }
+                return array;
+            });
+            
+            // Handle individual bars enter
+            bars
+            .enter().append("rect")
+                .attr("x", 0)
+                .attr("y", function(d) { return yScaleBar_inner(d.key); })
+                .attr("height", yScaleBar_inner.bandwidth())
+                .transition()
+                .duration(500)
+                .ease(d3.easeLinear)
+                .attr("width", function(d) { return xScaleBar(+d.value); })
+                .style("fill", get_colour())
+
+            // Handle indiviudal bars update
+            bars
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .transition()
+            .duration(1000)
             .ease(d3.easeLinear)
             .attr("width", function(d) { return xScaleBar(+d.value); })
-            .style("fill", get_colour())
 
-        // Handle indiviudal bars update
-        bars
-        .attr("y", function(d) { return yScaleBar_inner(d.key); })
-        .transition()
-        .duration(1000)
-        .ease(d3.easeLinear)
-        .attr("width", function(d) { return xScaleBar(+d.value); })
-
-        // Handle bars exit
-        bars.exit().remove();
-    }
-}
+            // Handle bars exit
+            bars.exit().remove();
+        }
+    }    
+} 
 
 /******** HANDLE SLIDER UPDATE ************/
 
@@ -295,7 +314,7 @@ var yearDisplay = document.getElementById("year_header");
 var running = true;
 
 // Updates the year and moves the slider to appropriate position
-function updateYearAndSlider() {
+function filterByYearAndSlider() {
     if (running) {
 
         displayYear = displayYear + 1;
@@ -314,7 +333,9 @@ slider.oninput = function() {
     yearDisplay.innerText = displayYear;
     running = false;
     sliderControlBtn.innerText = "Start";
-    generateVis();
+    v.filterByYear();
+    v.circleChart();
+    v.barChart();
 }
 
 // Controls stop/start action of slider control button
@@ -373,10 +394,10 @@ function updateCheckedCountries(){
 // Load the data.csv and generate visualisation
 d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
 
-    // Add countries to search list
-    populateSearchList(data);
-
     dataset = data;
+
+    // Add countries to search list
+    populateSearchList(dataset);
 
     /******** BUBBLE GRAPH ************/
 
@@ -443,15 +464,22 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
         .attr("id", "yAxisBar")
         .call(yAxisBar);
 
-    // Initiate graph
-    generateVis();
+    v = new Visualisation(dataset);
+
+    // Filter the data by year
+    v.filterByYear();
+
+    // Initiate circle graph
+    v.circleChart();
 
     //Set up a callback so we iterate through the years
     setInterval(function() {
         if (running) {
             updateCheckedCountries();
-            updateYearAndSlider();
-            generateVis();
+            filterByYearAndSlider();
+            v.filterByYear();
+            v.circleChart();
+            v.barChart();
         }
     }, 1000);
 });
