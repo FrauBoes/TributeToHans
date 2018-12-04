@@ -11,7 +11,7 @@ checkedCountries = [];
 var v;
 
 // Trace checked countries?
-var trace = true;
+var traceChecked = false;
 
 /******** BUBBLE GRAPH ************/
 
@@ -191,13 +191,69 @@ class Visualisation {
     constructor(data) {
         this.dataset = data;
         this.yearData;
+
+        // Stores trace circles: {"China": [{...}, {...}], "India": [{...}, {...}]}
+        this.trace = {};
     }
 
     filterByYear() {
         this.yearData = this.dataset.filter(yearFilter);
+
+        // If trace checkbox is checked, and there are countries selected...
+        if (traceChecked && checkedCountries.length > 0) {
+
+            // For each checked country, add this year's data to the trace object
+            for (var i = 0; i < checkedCountries.length; i++) {
+                
+                // Filter year data for country
+                var latestTrace = this.yearData.filter(function(d) { 
+                    return d.Country == checkedCountries[i];
+                });
+                
+                // If the country has data this year
+                if (latestTrace.length > 0) {
+                    // If trace object already has an array for this country
+                    if (this.trace[checkedCountries[i]]) {
+                        // If this country already has all the years in its trace, don't add duplicates!
+                        if (!(this.trace[checkedCountries[i]].length >= 10)) {
+                            // Note [0] - the filter returns an array like [{...}], but we want the object inside.
+                            this.trace[checkedCountries[i]].push(latestTrace[0]);
+                        }
+                    } else {
+                        this.trace[checkedCountries[i]] = [latestTrace[0]];                              
+                    }
+                }
+            }
+
+            console.log(this.trace)
+
+            // Remove unchecked countries from trace object
+            for (var country in this.trace) {
+                var country_in_list = false
+                for (var i = 0; i < checkedCountries.length; i++) {
+                    if (country == checkedCountries[i]) {
+                        country_in_list = true
+                        break;
+                    }
+                }
+                if (!country_in_list) {
+                    delete this.trace[country]
+                }
+            }
+        } else {
+            this.trace = {};
+        }
     }
 
     circleChart() {
+
+        if (traceChecked && checkedCountries.length > 0) {
+            for (var country in this.trace) {
+                // remove final element so country can do an animated "update" into it instead
+                var trace_circles = this.trace[country].slice(0, -1)
+                this.yearData = this.yearData.concat(trace_circles);
+            }
+        }
 
         /******** PERFORM DATA JOIN ************/
         var circles = svgBubble.selectAll("circle")
@@ -213,9 +269,6 @@ class Visualisation {
         .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
         .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
         .style("fill", function(d) { return colour[d['Forum classification']]; });
-        // .filter(function(d) {
-        //     return d.Country != "China"
-        // }).append("circle");
 
         /******** HANDLE ENTER SELECTION ************/
         // Create new elements in the dataset
@@ -233,7 +286,7 @@ class Visualisation {
 
         /******** HANDLE EXIT SELECTION ************/
         // Remove dom elements that no longer have a matching data element
-        circles.exit().remove()
+        circles.exit().remove();
     }
 
     barChart() {
@@ -245,14 +298,14 @@ class Visualisation {
         updateBarLegend();
 
         // Filter the data to only include the current country selection
-        var filteredDatasetBar = this.yearData.filter(countryFilter);
+        var barData = this.yearData.filter(countryFilter);
 
         // Data must be transposed to create the bar chart
         var transposedData = [];        
         for (var key in columnNames) {
             var IndexObj = {"Index": key};
-            for (var j = 0; j < filteredDatasetBar.length; j++) {
-                IndexObj[filteredDatasetBar[j]["Country"]] = filteredDatasetBar[j][key];
+            for (var j = 0; j < barData.length; j++) {
+                IndexObj[barData[j]["Country"]] = barData[j][key];
             }
             transposedData.push(IndexObj);
         }
@@ -369,6 +422,15 @@ slider.oninput = function() {
 sliderControlBtn.onclick = function() {
     running = !running;
     sliderControlBtn.innerText = running ? "Stop" : "Start";
+}
+
+/******** Trail Selector ************/
+function trails() {
+    if (traceChecked) {
+        traceChecked = false;
+    } else {
+        traceChecked = true;
+    }
 }
 
 /******** SEARCH LIST ************/
