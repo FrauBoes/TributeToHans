@@ -343,10 +343,11 @@ class Visualisation {
         /******** HANDLE UPDATE SELECTION ************/
         // Individual bars update
         bars
-            .attr("y", function(d) { return yScaleBar_inner(d.key); })
             .transition()
             .duration(1000)
             .ease(d3.easeLinear)
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .attr("height", yScaleBar_inner.bandwidth())
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
@@ -364,12 +365,13 @@ class Visualisation {
         // Individual bars enter
         bars
         .enter().append("rect")
-            .attr("x", 0)
-            .attr("y", function(d) { return yScaleBar_inner(d.key); })
-            .attr("height", yScaleBar_inner.bandwidth())
             .transition()
             .duration(500)
             .ease(d3.easeLinear)
+            .attr("x", 0)
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .attr("height", yScaleBar_inner.bandwidth())
+
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
