@@ -109,7 +109,7 @@ var xScaleBar = d3.scaleLinear()
 
 // Between groups scale
 var yScaleBar_outer = d3.scaleBand()
-    .range([svgHeightBar, 0])
+    .rangeRound([svgHeightBar, 0])
     .paddingInner(0.1);
 
 // Within group scale
@@ -200,7 +200,11 @@ class Visualisation {
     filterByYear() {
         this.yearData = this.dataset.filter(yearFilter);
 
-        // If trace checkbox is checked, and there are countries selected...
+        this.updateTrace();
+    }
+
+    updateTrace() {
+       // If trace checkbox is checked, and there are countries selected...
         if (traceChecked && checkedCountries.length > 0) {
 
             // For each checked country, add this year's data to the trace object
@@ -244,24 +248,26 @@ class Visualisation {
             }
         } else {
             this.trace = {};
-        }
+        }      
     }
 
     // Method for handling Circle Chart Data
     circleChart() {
+
+        var circleData = this.yearData;
 
         // If trace checkbox is ticked, add country traces to dataset.
         if (traceChecked && Object.keys(this.trace).length) {
             for (var country in this.trace) {
                 // remove final element so country can do an animated "update" into it instead
                 var trace_circles = this.trace[country].slice(0, -1)
-                this.yearData = this.yearData.concat(trace_circles);
+                circleData = circleData.concat(trace_circles);
             }
         }
 
         /******** PERFORM DATA JOIN ************/
         var circles = svgBubble.selectAll("circle")
-            .data(this.yearData, function key(d) { return d.Country; });
+            .data(circleData, function key(d) { return d.Country; });
 
         /******** HANDLE UPDATE SELECTION ************/
         // Update the display of existing elements to match new data
@@ -320,7 +326,7 @@ class Visualisation {
 
         // Specify axis scale of each group
         yScaleBar_inner.domain(keys)
-            .range([yScaleBar_outer.bandwidth(), 0]);
+            .rangeRound([yScaleBar_outer.bandwidth(), 0]);
   
         /******** PERFORM DATA JOIN ************/
         // Assign data to bar groups
