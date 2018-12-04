@@ -259,7 +259,7 @@ class Visualisation {
             for (var country in this.trace) {
                 // remove final element so country can do an animated "update" into it instead
                 var trace_circles = this.trace[country].slice(0, -1)
-                var circleData = circleData.concat(trace_circles);
+                circleData = circleData.concat(trace_circles);
             }
         }
 
