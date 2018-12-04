@@ -288,7 +288,7 @@ class Visualisation {
         .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
         .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
         .style("fill", function(d) { return colour[d['Forum classification']]; })
-        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").html("<b>Country: </b>" + d.Country + "<br><b>Population: </b>" + d.Population);})
+        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").html("<b>Country: </b>" + d.Country + "<br><b>Population: </b>" + (+d.Population).toLocaleString());})
         .on("mousemove", function() {
             return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
         })
@@ -453,7 +453,7 @@ function populateSearchList(data){
 
     for (var i=0; i<countryNames.length; i++){
         countrySearchList.append(`
-            <input type="checkbox" name="${countryNames[i]}" value="${countryNames[i]}"><span>${countryNames[i]}<br></span>`);
+            <input class="countryCheckbox" type="checkbox" name="${countryNames[i]}" value="${countryNames[i]}"><span>${countryNames[i]}<br></span>`);
     }
 }
 
@@ -476,6 +476,14 @@ function countrySearch(){
         }
     }
 }
+
+// limit number of selections in search list to a maximum of 3
+var maxSelection = 3;
+$(document).on("change", ".countryCheckbox", function(e){
+    if($(this).siblings(':checked').length >= maxSelection) {
+       this.checked = false;
+   }
+});
 
 //  Add/remove checked/unchecked countries to the gloabl checkedCountries array
 function updateCheckedCountries(){

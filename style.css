@@ -114,14 +114,21 @@ rect {
 #barLegend li { 
     float: left; 
     margin-right: 10px;
+    vertical-align: center;
  }
 
 #barLegend span {
     width: 15px; 
     height: 15px; 
-    margin: 2px; 
+    margin-right: 2px;
+    margin-left: 2px; 
     display: inline-block;
     border-style: solid;
     border-width: thin;
     border-color: #222;
+}
+
+strong{
+    display: block;
+    font-size: 15px;
 }
