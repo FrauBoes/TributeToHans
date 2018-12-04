@@ -59,11 +59,13 @@ var rScaleBubble = d3.scaleLinear()
 
 // Define axes
 var xAxisBubble = d3.axisBottom()
-    .scale(xScaleBubble)
+    .scale(xScaleBubble);
 
 var yAxisBubble = d3.axisLeft()
     .scale(yScaleBubble)
-    .ticks(5);
+    .ticks(5)
+    .tickSize(- svgWidthBubble, 0)
+    .tickSizeOuter(0);
 
 // Color map for countries based on their region. Field name in data: 'Forum classification'
 var colour = {
