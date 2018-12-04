@@ -29,11 +29,11 @@ var marginBubble = {
     top: 20,
     right: 20,
     bottom: 20,
-    left: 40
+    left: 20
 };
 
 // Width and height
-var outerWidthBubble = 800;
+var outerWidthBubble = 780;
 var outerHeightBubble = 500;
 var svgWidthBubble = outerWidthBubble - marginBubble.left - marginBubble.right;
 var svgHeightBubble = outerHeightBubble - marginBubble.top - marginBubble.bottom;
@@ -368,8 +368,8 @@ class Visualisation {
         // Bar group enter
         barGroups
         .enter().append("g")
-            .classed('barGroup', true)
-            .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
+            .classed('barGroup', true)                                 // Add +5 to line up ticks a bit better
+            .attr("transform", function(d) { return "translate(0, " + (yScaleBar_outer(d.Index) + 5) + ")"; });
 
         // Individual bars enter
         bars

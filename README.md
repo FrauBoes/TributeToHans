@@ -13,8 +13,9 @@ World Economic Forum: [Global Competitiveness Report 2017-2018](http://reports.w
 	- Circles color-encoded based on region information on the data
 	- Ability to view data for a particular year 
 	- Ability to animate the change from year to year
+	- Ability to trace the movement of a selected country from year to year.
 
-- A bar chart representing the detailed indices for selected countries
+- A grouped bar chart representing the detailed indices for selected countries
 	- Y-axis: Index labels
 	- X-axis: Index scale (linear)
 	- Up to three countries can be selected at a time
@@ -26,4 +27,4 @@ A scroll bar at the bottom can be used both to control the year displayed and to
 
 A search field with check boxed can be used to select countries to be displayed in the bar chart.
 
-A separate checkbox can be used to turn on/off the trailing feature of the bubble chart.
+A separate "Trail" checkbox can be used to turn on/off the trailing/tracing feature of the bubble chart.
