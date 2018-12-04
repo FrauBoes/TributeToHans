@@ -64,7 +64,9 @@ var xAxisBubble = d3.axisBottom()
 
 var yAxisBubble = d3.axisLeft()
     .scale(yScaleBubble)
-    .ticks(5);
+    .ticks(5)
+    .tickSize(- svgWidthBubble, 0)    // Add grid lines 
+    .tickSizeOuter(0);
 
 // Color map for countries based on their region. Field name in data: 'Forum classification'
 var colour = {
@@ -126,7 +128,8 @@ var yAxisBar = d3.axisLeft()
     .scale(yScaleBar_outer)
     .tickFormat(function (d) {
         return columnNames[d] 
-    });
+    })
+    .tickSize(0);    // Remove ticks
 
 // Mapping of column names and strings for tick label for bar graph
 var columnNames = {
