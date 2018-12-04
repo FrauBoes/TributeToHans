@@ -10,7 +10,7 @@ checkedCountries = [];
 // Stores visualisation class
 var v;
 
-// Trace checked countries?
+// Value of checkbox for tracing country paths in circle chart.
 var traceChecked = false;
 
 /******** BUBBLE GRAPH ************/
@@ -219,7 +219,7 @@ class Visualisation {
                         // If this country already has all the years in its trace, don't add duplicates!
                         if (!(this.trace[checkedCountries[i]].length >= 10)) {
 
-                            // Note [0] - the filter returns an array like [{...}], but we want the object inside.
+                            // Note '[0]' -> the filter returns an array like [{...}], but we want the object inside.
                             this.trace[checkedCountries[i]].push(latestTrace[0]);
                         }
                     } else {
@@ -227,8 +227,6 @@ class Visualisation {
                     }
                 }
             }
-
-            console.log(this.trace)
 
             // Remove unchecked countries from trace object
             for (var country in this.trace) {
@@ -250,6 +248,7 @@ class Visualisation {
 
     circleChart() {
 
+        // If trace checkbox is ticked, add country traces to dataset.
         if (traceChecked && Object.keys(this.trace).length) {
             for (var country in this.trace) {
                 // remove final element so country can do an animated "update" into it instead
@@ -350,6 +349,7 @@ class Visualisation {
             .transition()
             .duration(1000)
             .ease(d3.easeLinear)
+            .attr("height", yScaleBar_inner.bandwidth())
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
@@ -574,14 +574,14 @@ d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
 
     //Set up a callback so we iterate through the years
     setInterval(function() {
+        // Always update checkedCountries for bar chart
+        updateCheckedCountries();
+
+        // When circle chart is running
         if (running) {
-            updateCheckedCountries();
             filterByYearAndSlider();
             v.filterByYear();
             v.circleChart();
         }
-        // When not running, still update checkedCountries for bar chart
-        updateCheckedCountries();
-
     }, 1000);
 });
