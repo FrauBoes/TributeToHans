@@ -204,18 +204,21 @@ class Visualisation {
 
             // For each checked country, add this year's data to the trace object
             for (var i = 0; i < checkedCountries.length; i++) {
-                
-                // Filter year data for country
+
+                // Filter year data for country name
                 var latestTrace = this.yearData.filter(function(d) { 
                     return d.Country == checkedCountries[i];
                 });
                 
                 // If the country has data this year
                 if (latestTrace.length > 0) {
+
                     // If trace object already has an array for this country
                     if (this.trace[checkedCountries[i]]) {
+
                         // If this country already has all the years in its trace, don't add duplicates!
                         if (!(this.trace[checkedCountries[i]].length >= 10)) {
+
                             // Note [0] - the filter returns an array like [{...}], but we want the object inside.
                             this.trace[checkedCountries[i]].push(latestTrace[0]);
                         }
@@ -247,7 +250,7 @@ class Visualisation {
 
     circleChart() {
 
-        if (traceChecked && checkedCountries.length > 0) {
+        if (traceChecked && Object.keys(this.trace).length) {
             for (var country in this.trace) {
                 // remove final element so country can do an animated "update" into it instead
                 var trace_circles = this.trace[country].slice(0, -1)
@@ -343,11 +346,10 @@ class Visualisation {
         /******** HANDLE UPDATE SELECTION ************/
         // Individual bars update
         bars
+            .attr("y", function(d) { return yScaleBar_inner(d.key); })
             .transition()
             .duration(1000)
             .ease(d3.easeLinear)
-            .attr("y", function(d) { return yScaleBar_inner(d.key); })
-            .attr("height", yScaleBar_inner.bandwidth())
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
@@ -365,13 +367,12 @@ class Visualisation {
         // Individual bars enter
         bars
         .enter().append("rect")
-            .transition()
-            .duration(500)
-            .ease(d3.easeLinear)
             .attr("x", 0)
             .attr("y", function(d) { return yScaleBar_inner(d.key); })
             .attr("height", yScaleBar_inner.bandwidth())
-
+            .transition()
+            .duration(500)
+            .ease(d3.easeLinear)
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
