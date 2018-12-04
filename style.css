@@ -7,36 +7,36 @@ body {
 #wrapper {
     width: 100%;
     display: flex; 
+    justify-content: center;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
 main {
-    width: 70%;
+    display: flex;
     flex-direction: column;
-    align-items: left;
 }
 
 #mainTitle {
     font-size: 24px;
-    font-weight: bold;   
-    flex-direction: row;
+    font-weight: bold; 
 }
 
 aside {
-    width: 30%;
+    padding-left: 25px;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
-#secondaryChart {
-    width: 95%;
-    height: 75%;
+#listTrailContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-evenly;
 }
 
 #listContainer {
-    width: 100%;
     height: 25%;
     font-size: 11px;
 }
@@ -47,21 +47,42 @@ aside {
     align-items: center;
 }
 
+#trailSelector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#trailSelector span {
+    font-size: 18px;
+}
+
 /* Slider styling */ 
-#slidecontainer {
-    width: 100%;
+
+#slideOuterContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#slideInnerContainer {
+    width: 90%;
     display: flex;
     align-items: center;
 }
 
+#yearRangeBtn {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+}
+
 #year_header {
-    width: 10%;
     font-size: 24pt;
     font-weight: bold;
 }
 
 .slider {
-    width: 80%;
+    width: 100%;
     height: 25px;
     background: lightgrey;
     outline: none;
@@ -75,6 +96,7 @@ aside {
 
 #trailSelector {
     font-size: 11px;
+    padding-top: 20px;
 }
 
 /* Graph element styles */
@@ -87,7 +109,6 @@ circle {
 
 rect {
     stroke: #222;
-    fill-opacity: 0.3;
     stroke-opacity: 0.8;
 }
 
@@ -101,20 +122,20 @@ rect {
 	font-size: 11px;
 }
 
-#legendContainer{
-    width: 100%;
-    height: 25%;
-}
-
 #barLegend { 
     list-style: none;
-
+    margin: 0px;
+    padding: 0px;
+    height: 28px;
+    display: flex;
+    align-content: center;
+    justify-content: space-evenly;
 }
 
 #barLegend li { 
     float: left; 
-    margin-right: 10px;
-    vertical-align: center;
+    display: flex;
+    align-items: center;
  }
 
 #barLegend span {

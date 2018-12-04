@@ -1,11 +1,12 @@
+"use strict"; // ECMAScript 5 strict mode helps catching more javascript errors.
 
 /******** GLOBAL VARIABLES ************/
 
 // The year to display
-displayYear = 2008;
+var displayYear = 2008;
 
 // Countries which are selected in the search list stored in array
-checkedCountries = [];
+var checkedCountries = [];
 
 // Stores visualisation class
 var v;
@@ -59,7 +60,7 @@ var rScaleBubble = d3.scaleLinear()
 
 // Define axes
 var xAxisBubble = d3.axisBottom()
-    .scale(xScaleBubble)
+    .scale(xScaleBubble);
 
 var yAxisBubble = d3.axisLeft()
     .scale(yScaleBubble)
@@ -141,7 +142,7 @@ var columnNames = {
     '10th_pillar_Market_size': 'Market Size', 
     '11th_pillar_Business_sophistication_': 'Business Sophistication', 
     '12th_pillar_Innovation': 'Innovation',
-}
+};
 
 /******** FUNCTIONS ************/
 
@@ -161,8 +162,9 @@ function countryFilter(value) {
 }
  
 // Assigning countries in bar graph a colour
-var barColor = ["#d9d9d9", "#969696", "#ffffff"]    // Available colors
-var assignedColor = {}                              // dictionnary storing country: color pairs
+//var barColor = ["#d9d9d9", "#969696", "#ffffff"];   // Available colors
+var barColor = ["Burlywood", "Darkgrey", "IndianRed"]
+var assignedColor = {};                             // dictionnary storing country: color pairs
 function assignColor() {
     for (var i = 0; i < checkedCountries.length; i++) {
         assignedColor[checkedCountries[i]] = barColor[i];
@@ -347,20 +349,17 @@ class Visualisation {
             return array;
         });
 
-        // Assign data to legend
-        var legend = svgBar.selectAll(".legend")
-            .data(checkedCountries);
-
         /******** HANDLE UPDATE SELECTION ************/
         // Individual bars update
         bars
-            .attr("y", function(d) { return yScaleBar_inner(d.key); })
-            .attr("height", yScaleBar_inner.bandwidth())
-            .transition()
-            .duration(1000)
-            .ease(d3.easeLinear)
-            .attr("width", function(d) { return xScaleBar(+d.value); })
-            .style("fill", function(d) { return assignedColor[d.key]; });
+        .attr("y", function(d) { return yScaleBar_inner(d.key); })
+        .attr("height", yScaleBar_inner.bandwidth())
+        .transition()
+        .duration(1000)
+        .ease(d3.easeLinear)
+        .attr("width", function(d) { return xScaleBar(+d.value); })
+        .style("fill", function(d) { return assignedColor[d.key]; });
+
 
         /******** HANDLE ENTER SELECTION ************/
         // Bar group enter
@@ -368,10 +367,6 @@ class Visualisation {
         .enter().append("g")
             .classed('barGroup', true)
             .attr("transform", function(d) { return "translate(0, " + yScaleBar_outer(d.Index) + ")"; });
-
-        // Legend enter
-        legend
-        .enter().append("g");
 
         // Individual bars enter
         bars
@@ -462,7 +457,7 @@ function countrySearch(){
     var countries = $("#countrySearchList").children("input");
     var countriesText = $("#countrySearchList").children("span");
 
-    query = $("#countrySearchInput").val().toUpperCase();
+    var query = $("#countrySearchInput").val().toUpperCase();
 
     for (var i = 0; i < countries.length; i++) {
         if (countries[i].value.toUpperCase().indexOf(query) > -1) {
@@ -510,7 +505,7 @@ function updateCheckedCountries(){
 // Load the data.csv and generate visualisation
 d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
 
-    dataset = data;
+    var dataset = data;
 
     // Add countries to search list
     populateSearchList(dataset);

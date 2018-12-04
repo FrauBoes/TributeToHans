@@ -4,8 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Channeling Hans</title>
-    <!-- Local D3 version 5 -->
-	<script type="text/javascript" src="./d3/d3_version5.js"></script>
+    <!-- D3 version 5 CDN -->
+	<script src="https://d3js.org/d3.v5.min.js"></script>
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Local Stylesheet -->
@@ -17,27 +17,27 @@
         <div id="mainTitle">Channeling Hans: Population, Global Competitive Index & GDP</div>
         <main>
             <div id="mainChart"></div>
-            <div>
-                <div id="slidecontainer">
+            <div id="slideOuterContainer">
+                <div id="slideInnerContainer">
                     <button id="yearRangeBtn" type="button">Stop</button>
                     <input id="yearRange" type="range" min="2008" max="2017" value="2008" class="slider">
                     <div id="year_header">2008</div>
-                </div>
-                <div id="trailSelector">
-                    <span>Trail</span>
-                    <input id="trailSelectorInput" type="checkbox" onclick="trails()" name="trailSelected" value="" autocomplete="off" >
                 </div>
             </div>
         </main>
         <aside>
             <div id="secondaryChart"></div>
-            <div id="legendContainer">
-                <ul id="barLegend"></ul>
-            </div>
-            <div id="listContainer">
-                <strong>Select up to 3 countries</strong>
-                <input id="countrySearchInput"type="text" onkeyup="countrySearch()" placeholder="Search for countries..">
-                <form id="countrySearchList"></form>
+            <ul id="barLegend"></ul>
+            <div id="listTrailContainer">
+                <div id="listContainer">
+                    <strong>Select up to 3 countries</strong>
+                    <input id="countrySearchInput" type="text" onkeyup="countrySearch()" placeholder="Search for countries..">
+                    <form id="countrySearchList"></form>
+                </div>
+                <div id="trailSelector">
+                    <span>Trail</span>
+                    <input id="trailSelectorInput" type="checkbox" onclick="trails()" name="trailSelected" value="" autocomplete="off" >
+                </div>
             </div>
         </aside>
     </div>
