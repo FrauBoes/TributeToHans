@@ -127,7 +127,8 @@ var yAxisBar = d3.axisLeft()
     .scale(yScaleBar_outer)
     .tickFormat(function (d) {
         return columnNames[d] 
-    });
+    })
+    .tickSize(0);
 
 // Mapping of column names and strings for tick label for bar graph
 var columnNames = {
