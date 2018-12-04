@@ -288,7 +288,7 @@ class Visualisation {
         .attr("cy", function(d) { return yScaleBubble(d.Global_Competitiveness_Index); })
         .attr("r", function(d) { return Math.sqrt(rScaleBubble(+d.Population)/Math.PI); })
         .style("fill", function(d) { return colour[d['Forum classification']]; })
-        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").text(d.Country);})
+        .on("mouseover", function(d) { return countryLabel.style("visibility", "visible").html("<b>Country: </b>" + d.Country + "<br><b>Population: </b>" + d.Population);})
         .on("mousemove", function() {
             return countryLabel.style("top", (d3.event.pageY - 10) + "px").style("left", (d3.event.pageX + 10) + "px");
         })
