@@ -346,10 +346,10 @@ class Visualisation {
         // Individual bars update
         bars
             .attr("y", function(d) { return yScaleBar_inner(d.key); })
+            .attr("height", yScaleBar_inner.bandwidth())
             .transition()
             .duration(1000)
             .ease(d3.easeLinear)
-            .attr("height", yScaleBar_inner.bandwidth())
             .attr("width", function(d) { return xScaleBar(+d.value); })
             .style("fill", function(d) { return assignedColor[d.key]; });
 
