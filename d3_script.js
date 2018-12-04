@@ -160,15 +160,16 @@ function countryFilter(value) {
     || value.Country == checkedCountries[2]);
 }
  
-// Function for assigning bar graph colours
-var barColor = ["#d9d9d9", "#969696", "#ffffff"]
-var assignedColor = {} // dict. which stores country: color pairs
+// Assigning countries in bar graph a colour
+var barColor = ["#d9d9d9", "#969696", "#ffffff"]    // Available colors
+var assignedColor = {}                              // dictionnary storing country: color pairs
 function assignColor() {
     for (var i = 0; i < checkedCountries.length; i++) {
         assignedColor[checkedCountries[i]] = barColor[i];
     }
 }
 
+// Draw the Legend for the Bar plot 
 function updateBarLegend(){
     var legend = $("#barLegend");
     legend.empty();
@@ -246,6 +247,7 @@ class Visualisation {
         }
     }
 
+    // Method for handling Circle Chart Data
     circleChart() {
 
         // If trace checkbox is ticked, add country traces to dataset.
@@ -291,6 +293,7 @@ class Visualisation {
         circles.exit().remove();
     }
 
+    // Method for handling Bar Chart Data
     barChart() {
 
         // Assign a color to each group of bars in the chart

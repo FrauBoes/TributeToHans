@@ -48,7 +48,6 @@ aside {
 }
 
 /* Slider styling */ 
-
 #slidecontainer {
     width: 100%;
     display: flex;
@@ -101,12 +100,6 @@ rect {
 .axis text {
 	font-size: 11px;
 }
-
-/* Helps when styling flexboxes */
-/*main, aside, svg, #slidecontainer, #countrySearchList {
-    border: 1px solid black;
-    box-sizing: border-box;
-}*/
 
 #legendContainer{
     width: 100%;
