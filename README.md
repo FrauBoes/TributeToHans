@@ -2,10 +2,13 @@
 
 ## How to run
 In root directory run
-	python -m http.server
-
+```
+python -m http.server
+```
 In the browser, go to 
-	http://localhost:8000/1-scatterplot.html
+```
+http://localhost:8000/1-scatterplot.html
+```
 
 ## Data
 World Economic Forum: [Global Competitiveness Report 2017-2018](http://reports.weforum.org/global-competitiveness-index-2017-2018/)
