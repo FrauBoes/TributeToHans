@@ -227,7 +227,7 @@ class Visualisation {
                     if (this.trace[checkedCountries[i]]) {
 
                         // If this country already has all the years in its trace, don't add duplicates!
-                        if (!(this.trace[checkedCountries[i]].length >= 10)) {
+                        if (!(this.trace[checkedCountries[i]].length >= 11)) {
 
                             // Note '[0]' -> the filter returns an array like [{...}], but we want the object inside.
                             this.trace[checkedCountries[i]].push(latestTrace[0]);
