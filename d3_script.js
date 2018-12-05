@@ -504,19 +504,26 @@ function updateCheckedCountries(){
     v.barChart();
 }
 
-
 // Load the data.csv and generate visualisation
 d3.csv("./data/GCI_CompleteData4.csv").then(function(data) {
 
-    var dataset = data;
+    // Add interpolated values
+    var interpolated_data = interpolateIndices(data);
 
-    // Add countries to search list
+    // Add any extra years that are missing
+    var all_years = ensure_allYears(interpolated_data);
+
+    // Add values that cannot be interpolated
+    // (because they extend to the end/start of the data for that country)
+    var dataset = extrapolateColumns(all_years);
+
+    //Add countries to search list
     populateSearchList(dataset);
 
     /******** BUBBLE GRAPH ************/
 
     // Get maximums and minimums where necessary
-    var max_GDP = d3.max(dataset, function(d) { return +d.GDP;} );
+    var max_GDP = d3.max(dataset, function(d) { return +d.GDP; } );
     var max_pop = d3.max(dataset, function(d) { return +d.Population;} );
     
     // Specify axis domains
