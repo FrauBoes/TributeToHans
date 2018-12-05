@@ -150,9 +150,9 @@ var columnNames = {
 /******** FUNCTIONS ************/
 
 // Filters data by year
-// Exclude countries where any of the features is missing a value    // TODO: Add interpolation
+// Exclude countries where any of the features is missing a value  
 function yearFilter(value) {
-    return (value.Year == displayYear 
+    return (value.Year == displayYear
         && value.GDP != 0 && value.Global_Competitiveness_Index != 0 
         && value.Population != 0);
 }
