@@ -475,7 +475,7 @@ function countrySearch(){
     }
 }
 
-// limit number of selections in search list to a maximum of 3
+// Limit number of selections in search list to a maximum of 3
 var maxSelection = 3;
 $(document).on("change", ".countryCheckbox", function(e){
     if($(this).siblings(':checked').length >= maxSelection) {
