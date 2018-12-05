@@ -33,8 +33,6 @@ function interpolateIndices(data) {
         if (missing_block == true && b["1st_pillar_Institutions"] != "") {
             missing_block = false
 
-            console.log("Block to interpolate: ", a.Country, a.Year, b.Year)
-
             var diff = b.Year - a.Year;
 
             // Generate intermediary values
@@ -143,33 +141,6 @@ function ensure_allYears(data) {
     return data.sort(function (a, b) {return d3.ascending( a.Country, b.Country);})
 }
 
-// // Linear data extrapolation
-// // Code source: https://stackoverflow.com/questions/20507536/d3-js-linear-regression
-// function linearRegression(y,x){
-
-//     var lr = {};
-//     var n = y.length;
-//     var sum_x = 0;
-//     var sum_y = 0;
-//     var sum_xy = 0;
-//     var sum_xx = 0;
-//     var sum_yy = 0;
-
-//     for (var i = 0; i < y.length; i++) {
-
-//         sum_x += x[i];
-//         sum_y += y[i];
-//         sum_xy += (x[i]*y[i]);
-//         sum_xx += (x[i]*x[i]);
-//         sum_yy += (y[i]*y[i]);
-//     } 
-
-//     lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
-//     lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
-
-//     return lr;
-// };
-
 // Assumes data has objects for all 10 years.
 // Takes data = [{..}, {..}, {..}], and columnNames = the (numeric) columns to be predicted
 function extrapolate(data, columnNames) {
@@ -185,17 +156,11 @@ function extrapolate(data, columnNames) {
         // Generate lists of years that have data and years that don't
         for (var i = 0; i < 11; i++ ) {
             if (data[i][columnName] != "" ) {
-                //xSeries.push(+data[i]["Year"] - yearOffset); // 2007: 1, 2008: 2, ... , 2017: 10
                 ySeries.push(+data[i][columnName]);
             } else {
                 no_data.push(data[i]["Year"])
             }
         }
-
-        // // Generate linear model from years that do have data.
-        // var lr = linearRegression(xSeries, ySeries);
-        // var b0 = lr['intercept'];
-        // var b1 = lr['slope'];
 
         // Use model coefficients to predict for years that don't have data
         if (no_data.length > 0) {
@@ -208,11 +173,8 @@ function extrapolate(data, columnNames) {
                             // than that value itself.
                             data[j][columnName] = String(ySeries[0])
                         } else {
-                            //var x = (+data[j]["Year"] - yearOffset);
-                            //data[j][columnName] = b0 + (x * b1) // Assign predicted value
-
                             var sum = ySeries.reduce(function(a, b) { return a + b; });
-                            data[j][columnName] = String(sum/ySeries.length); // Assign predicted value
+                            data[j][columnName] = String(sum/ySeries.length);
                         }
                     }
                 }

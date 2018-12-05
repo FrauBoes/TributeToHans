@@ -3,7 +3,7 @@
 /******** GLOBAL VARIABLES ************/
 
 // The year to display
-var displayYear = 2008;
+var displayYear = 2007;
 
 // Countries which are selected in the search list stored in array
 var checkedCountries = [];
@@ -409,7 +409,7 @@ function filterByYearAndSlider() {
 
         displayYear = displayYear + 1;
         if (displayYear > 2017) {
-            displayYear = 2008;
+            displayYear = 2007;
         }
         slider.value = displayYear;
         yearDisplay.innerText = displayYear;

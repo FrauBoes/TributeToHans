@@ -13,7 +13,13 @@ http://localhost:8000/1-scatterplot.html
 ## Data
 World Economic Forum: [Global Competitiveness Report 2017-2018](http://reports.weforum.org/global-competitiveness-index-2017-2018/)
 
-Data points for missing values are not included in the visualisations. Alternatively, these missing values could be interpolated to make the visualisation more consistent.
+Missing data values were interpolated using linear interpolation where possible.
+Where not possible (when data was missing at the start or end of a country's data), the average 
+for that country's data was provided instead, in order to maintain a smooth visualisation.
+Initially, we tried using a simple linear model to predict these values. However, the dataset
+was not large, and the shape of the data not necessarily linear, leading to large outliers. 
+Missing years were also added to the dataset as required.
+
 
 ## Visualisation Elements
 
